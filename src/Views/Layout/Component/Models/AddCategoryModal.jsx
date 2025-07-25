@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import * as bootstrap from 'bootstrap';
 
 const baseURL = import.meta.env.VITE_API_URL;
 

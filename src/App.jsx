@@ -11,8 +11,9 @@ import 'aos/dist/aos.css'
 import { useEffect } from 'react'
 import AddProduct from './Views/Pages/products/AddProduct.jsx'
 
-// Firebase imports
-import { getAuth, onIdTokenChanged } from 'firebase/auth'
+
+
+
 import Brand from './Views/Pages/brands/Brand.jsx'
 import Category from './Views/Pages/categories/Category.jsx'
 

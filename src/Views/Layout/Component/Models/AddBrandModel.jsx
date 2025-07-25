@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useEffect } from 'react';
+import * as bootstrap from 'bootstrap';
 
 const baseURL = import.meta.env.VITE_API_URL;
 
