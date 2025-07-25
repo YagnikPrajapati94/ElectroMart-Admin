@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import * as bootstrap from 'bootstrap';
+import { useRef } from 'react';
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -11,6 +11,7 @@ const AddCategoryModal = ({ fetchCategories, editData }) => {
     const [brands, setBrands] = useState([]);
     const [loading, setLoading] = useState(false);
     const token = sessionStorage.getItem("adminToken");
+    const closeBtnRef = useRef();
 
     // Fetch brand list for dropdown
     const getBrands = async () => {
@@ -52,14 +53,12 @@ const AddCategoryModal = ({ fetchCategories, editData }) => {
 
             reset();
             fetchCategories?.();
-            const modalEl = document.getElementById('categoryModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalEl);
-            if (modalInstance) modalInstance.hide();
         } catch (error) {
             toast.error("Failed to save category");
             console.error(error);
         } finally {
             setLoading(false);
+            closeBtnRef.current.click(); // This will close the modal
         }
     };
 
@@ -73,7 +72,7 @@ const AddCategoryModal = ({ fetchCategories, editData }) => {
                 <div className="modal-content bg-black text-light">
                     <div className="modal-header">
                         <h5 className="modal-title">{editData ? "Update" : "Add"} Category</h5>
-                        <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" onClick={handleClose}></button>
+                        <button ref={closeBtnRef} type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" onClick={handleClose}></button>
                     </div>
                     <div className="modal-body">
                         <form onSubmit={handleSubmit(handleFormSubmit)} className="d-grid gap-3">

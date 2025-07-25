@@ -24,6 +24,7 @@ const Brand = () => {
         try {
             const res = await axios.get(`${baseURL}/api/getBrands`);
             setBrands(res.data.brands);
+            // console.log(res.data.brands);
         } catch (error) {
             console.log(error);
         } finally {
@@ -36,6 +37,7 @@ const Brand = () => {
     }, []);
 
     const handleDelete = async (id) => {
+        setLoading(id);
         try {
             await axios.delete(`${baseURL}/api/deleteBrand/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -44,6 +46,8 @@ const Brand = () => {
             fetchBrands();
         } catch (error) {
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -63,14 +67,6 @@ const Brand = () => {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredBrands.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(filteredBrands.length / itemsPerPage);
-
-    const handleNext = () => {
-        if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
-    };
-
-    const handlePrev = () => {
-        if (currentPage > 1) setCurrentPage(prev => prev - 1);
-    };
 
     return (
         <AdminLayout>
@@ -117,7 +113,7 @@ const Brand = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {loading ? (
+                                    {loading == true ? (
                                         [...Array(5)].map((_, index) => (
                                             <tr key={index}>
                                                 <td><Skeleton height={20} width={20} /></td>
@@ -133,7 +129,7 @@ const Brand = () => {
                                     ) : (
                                         currentItems.length > 0 ? (
                                             currentItems.map((brand, index) => (
-                                                <tr key={brand._id} onClick={() => handleView(brand._id)} data-bs-toggle="modal" data-bs-target="#detailsmodel" style={{ cursor: "pointer" }}>
+                                                <tr key={brand._id} style={{ cursor: "pointer" }}>
                                                     <td>{indexOfFirstItem + index + 1}</td>
                                                     <td className="fw-semibold">{brand.brandName}</td>
                                                     <td>
@@ -152,23 +148,36 @@ const Brand = () => {
                                                     <td className="text-end">
                                                         <button
                                                             data-bs-toggle="modal"
+                                                            data-bs-target="#detailsmodel"
+
+                                                            onClick={() => handleView(brand._id)}
+                                                            className="btn btn-sm btn-outline-info"
+                                                        >
+                                                            <i className="bi bi-eye"></i>
+                                                        </button>
+                                                        <button
+                                                            data-bs-toggle="modal"
                                                             data-bs-target="#exampleModal"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleEdit(brand);
-                                                            }}
-                                                            className="btn btn-sm btn-outline-primary me-2"
+                                                            onClick={(e) => handleEdit(brand)}
+
+
+
+                                                            className="btn btn-sm btn-outline-warning mx-2"
                                                         >
                                                             <i className="bi bi-pencil-fill"></i>
                                                         </button>
                                                         <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleDelete(brand._id);
-                                                            }}
+                                                            onClick={() => handleDelete(brand._id)}
+
                                                             className="btn btn-sm btn-outline-danger"
+                                                            disabled={loading == brand._id}
                                                         >
-                                                            <i className="bi bi-trash-fill"></i>
+                                                            {loading == brand._id ? (
+                                                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                            ) : (
+                                                                <i className="bi bi-trash"></i>
+                                                            )
+                                                            }
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -217,7 +226,7 @@ const Brand = () => {
                 <AddBrandModel editData={editData} fetchBrands={fetchBrands} />
                 <BrandDetailsModel brandId={brandId} />
             </div>
-        </AdminLayout>
+        </AdminLayout >
     );
 };
 

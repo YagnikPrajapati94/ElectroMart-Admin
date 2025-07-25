@@ -82,7 +82,7 @@ const AdminSidebar = () => {
 
     return (
         <div className="offcanvas offcanvas-start border-0 " id="offcanvas" aria-labelledby="offcanvasLabel">
-            <div className="offcanvas-header shadow-sm  bg-black    ">
+            <div className="offcanvas-header py-5  shadow-sm  bg-black    ">
                 <Link to='/admin/dashboard' className="navbar-brand    ">
                     <svg
 
@@ -96,7 +96,7 @@ const AdminSidebar = () => {
                         aria-label="ElectroMart logo"
                     >
                         {/* Icon group: scaled up and centered vertically */}
-                        <g transform="translate(20, 20) scale(1.5)">
+                        <g transform="translate(3, 20) scale(1.5)">
                             <path
                                 stroke="currentColor"
                                 strokeWidth={1.5}
@@ -108,7 +108,7 @@ const AdminSidebar = () => {
                         </g>
 
                         {/* Text group: shifted closer to icon */}
-                        <g transform="translate(70, 30)">
+                        <g transform="translate(55, 30)">
                             <text
                                 x="0"
                                 y="0"
@@ -149,7 +149,7 @@ const AdminSidebar = () => {
                 </Link>
                 <button type="button" className="btn-close btn-close-white  shadow-none d-lg-none d-block" data-bs-dismiss="offcanvas" aria-label="Close" />
             </div>
-            <div className="offcanvas-body py-0   sidebar-scroll px-0">
+            <div className="offcanvas-body py-0    sidebar-scroll px-0">
                 <ul className="list-unstyled   gap-3 navbar-nav">
                     {menuItems.map((item, index) => (
                         <li key={index} className=''>

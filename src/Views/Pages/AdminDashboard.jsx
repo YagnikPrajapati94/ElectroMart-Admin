@@ -10,9 +10,11 @@ const AdminDashboard = () => {
     const baseURL = import.meta.env.VITE_API_URL;
     const fetchData = async () => {
         try {
+            // get brands 
             const res = await axios.get(`${baseURL}/api/getBrands`);
-            // console.log(res);
             setBrands(res.data.brands);
+
+
         } catch (error) {
             console.log(error);
         }
@@ -31,9 +33,8 @@ const AdminDashboard = () => {
                     </div> */}
                 </div>
                 <div className="row">
-                    <DashboardCard bg={"bg-primary"} path={"/admin/products/add"} title={"Total Products"} count={100} icon="bi-box-seam" />
+                    {/* <DashboardCard bg={"bg-primary"} path={"/admin/products/add"} title={"Total Products"} count={100} icon="bi-box-seam" /> */}
                     <DashboardCard bg={"bg-danger"} path={"/admin/brands"} title={"Total Brands"} count={brands.length} icon="bi-tags-fill" />
-                    <DashboardCard bg={"bg-danger"} path={"/admin/brands"} title={"Total Earning"} count={brands.length} icon="bi-tags-fill" />
                 </div>
             </div>
 

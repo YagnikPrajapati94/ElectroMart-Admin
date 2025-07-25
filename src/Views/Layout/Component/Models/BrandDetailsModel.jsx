@@ -73,13 +73,13 @@ const BrandDetailsModel = ({ brandId }) => {
                                             <div className="accordion-item  mb-2" key={idx}>
                                                 <h2 className="accordion-header" id={`heading-${idx}`}>
                                                     <button className="accordion-button shadow-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse-${idx}`}>
-                                                        <strong>{category}</strong>
+                                                        <strong className='text-uppercase'>{category}</strong>
                                                     </button>
                                                 </h2>
                                                 <div id={`collapse-${idx}`} className="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
                                                     <div className="accordion-body">
                                                         <p className="text-muted mb-2">Available subcategories:</p>
-                                                        <ul className="list-group list-group-flush">
+                                                        <ul className="list-group text-uppercase list-group-flush">
                                                             {subcategories.map((sub, i) => (
                                                                 <li key={i} className="list-group-item">{sub}</li>
                                                             ))}

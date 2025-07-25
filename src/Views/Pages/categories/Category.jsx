@@ -68,11 +68,10 @@ const Category = () => {
         );
     });
 
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredCategories.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
-    const paginatedCategories = filteredCategories.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
 
 
 
@@ -134,10 +133,10 @@ const Category = () => {
                                     </tr>
                                 ))
                             ) : filteredCategories.length > 0 ? (
-                                paginatedCategories.map((cat, index) => (
+                                currentItems.map((cat, index) => (
 
                                     <tr key={cat._id}>
-                                        <td>{index + 1}</td>
+                                        <td>{indexOfFirstItem + index + 1}</td>
                                         <td>{cat.brand?.brandName || "N/A"}</td>
                                         <td className="fw-semibold">{cat.category}</td>
                                         <td>{cat.subcategory}</td>

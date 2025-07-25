@@ -17,7 +17,7 @@ const PrivateRoute = ({ children, requiredRole }) => {
 
         try {
             const decoded = jwtDecode(token);
-            console.log("Decoded token:", decoded); // ✅ Add this for debug
+            // console.log("Decoded token:", decoded); // ✅ Add this for debug
 
             const now = Date.now() / 1000;
 
