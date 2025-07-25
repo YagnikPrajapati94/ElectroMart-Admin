@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useEffect } from 'react';
-import * as bootstrap from 'bootstrap';
+import { useRef } from 'react';
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -12,6 +12,10 @@ const AddBrandModel = ({ fetchBrands, editData }) => {
     const [preview, setPreview] = useState(null);
     const [loading, setLoading] = useState(false);
     const token = sessionStorage.getItem('adminToken');
+
+
+    const closeBtnRef = useRef();
+
 
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -64,15 +68,16 @@ const AddBrandModel = ({ fetchBrands, editData }) => {
                 setPreview(null);
                 fetchBrands?.(); // Call parent function
             }
-            // ✅ Close Bootstrap modal
-            const modalEl = document.getElementById('exampleModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalEl);
-            if (modalInstance) modalInstance.hide();
+            // bootstrap.Modal.getOrCreateInstance(document.getElementById('exampleModal')).hide();
+
+
         } catch (error) {
             toast.error("Failed to add brand");
             console.error("Error while adding brand:", error);
         } finally {
             setLoading(false);
+            closeBtnRef.current.click(); // This will close the modal
+
         }
     };
 
@@ -87,7 +92,7 @@ const AddBrandModel = ({ fetchBrands, editData }) => {
                 <div className="modal-content bg-black text-light">
                     <div className="modal-header">
                         <h1 className="modal-title fs-5" id="exampleModalLabel">{editData ? 'Update' : 'Add'} Brand</h1>
-                        <button onClick={() => removePreview()} type="button" className="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close" />
+                        <button ref={closeBtnRef} onClick={() => removePreview()} type="button" className="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close" />
                     </div>
                     <div className="modal-body rounded-3 ">
                         <form onSubmit={handleSubmit(handleFormSubmit)} className='form-control bg-transparent text-light border-0 d-grid gap-2'>

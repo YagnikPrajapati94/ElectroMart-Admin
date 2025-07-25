@@ -1,65 +1,80 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AdminLayout from '../AdminLayout';
 import AddBrandModel from '../../Layout/Component/Models/AddBrandModel';
-import { useEffect } from 'react';
-import axios from 'axios';
-import { useState } from 'react';
-import { toast } from 'react-toastify';
 import BrandDetailsModel from '../../Layout/Component/Models/BrandDetailsModel';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import Skeleton from 'react-loading-skeleton'
 
 const Brand = () => {
     const baseURL = import.meta.env.VITE_API_URL;
+    const token = sessionStorage.getItem('adminToken');
+
     const [brands, setBrands] = useState([]);
     const [editData, setEditData] = useState(null);
     const [brandId, setBrandId] = useState(null);
-    const token = sessionStorage.getItem('adminToken');
     const [searchTerm, setSearchTerm] = useState('');
+    const [loading, setLoading] = useState(true);
 
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
 
     const fetchBrands = async () => {
+        setLoading(true);
         try {
             const res = await axios.get(`${baseURL}/api/getBrands`);
-            // console.log(res);
             setBrands(res.data.brands);
         } catch (error) {
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchBrands()
+        fetchBrands();
     }, []);
 
     const handleDelete = async (id) => {
         try {
-            const res = await axios.delete(`${baseURL}/api/deleteBrand/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+            await axios.delete(`${baseURL}/api/deleteBrand/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
             });
             toast.success("Brand deleted successfully");
-            fetchBrands()
-            // setBrands(brands.filter((brand) => brand._id !== id));
+            fetchBrands();
         } catch (error) {
             console.log(error);
         }
     };
+
     const handleEdit = (data) => {
         setEditData(data);
     };
+
+    const handleView = (id) => {
+        setBrandId(id);
+    };
+
     const filteredBrands = brands.filter((brand) =>
         brand.brandName.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    const handleView = (id) => {
-        setBrandId(id);
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredBrands.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredBrands.length / itemsPerPage);
+
+    const handleNext = () => {
+        if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
+    };
+
+    const handlePrev = () => {
+        if (currentPage > 1) setCurrentPage(prev => prev - 1);
     };
 
     return (
         <AdminLayout>
             <div className="container-fluid p-4">
-
-                {/* Header Section */}
                 <div className="row mb-4 align-items-center">
                     <div className="col-md-6">
                         <h3 className="fw-semibold text-dark m-0">Brands List</h3>
@@ -71,6 +86,7 @@ const Brand = () => {
                         </button>
                     </div>
                 </div>
+
                 <div className="row mb-3">
                     <div className="col-md-4 ms-auto">
                         <input
@@ -78,10 +94,14 @@ const Brand = () => {
                             className="form-control shadow-sm"
                             placeholder="Search brand name..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setCurrentPage(1); // reset to first page
+                            }}
                         />
                     </div>
                 </div>
+
 
                 <div className="row">
                     <div className="col-12">
@@ -89,69 +109,113 @@ const Brand = () => {
                             <table className="table table-hover align-middle mb-0 text-nowrap">
                                 <thead className="table-light">
                                     <tr className="align-middle text-uppercase small text-secondary">
-                                        <th style={{ minWidth: '50px' }}>#</th>
-                                        <th style={{ minWidth: '200px' }}>Brand Name</th>
-                                        <th style={{ minWidth: '120px' }}>Logo</th>
-                                        <th style={{ minWidth: '160px' }}>Created At</th>
-                                        <th className="text-end" style={{ minWidth: '120px' }}>Actions</th>
+                                        <th>#</th>
+                                        <th>Brand Name</th>
+                                        <th>Logo</th>
+                                        <th>Created At</th>
+                                        <th className="text-end">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody >
-                                    {filteredBrands.length > 0 ? (
-                                        filteredBrands.map((brand, index) => (
-                                            <tr onClick={() => handleView(brand._id)} data-bs-toggle="modal" data-bs-target="#detailsmodel" className='' key={brand._id} style={{ cursor: "pointer" }}>
-                                                <td>{index + 1}</td>
-                                                <td className="fw-semibold">{brand.brandName}</td>
-                                                <td>
-                                                    <img
-                                                        src={brand.brandLogo}
-                                                        alt={`${brand.brandName} Logo`}
-                                                        className="shadow-sm border border-1 rounded bg-white"
-                                                        style={{ width: '80px', height: '40px', objectFit: 'contain' }}
-                                                    />
-                                                </td>
-                                                <td>
-                                                    <span className="badge text-bg-light rounded-pill px-3 py-2">
-                                                        {new Date(brand.createdAt).toLocaleDateString()}
-                                                    </span>
-                                                </td>
+                                <tbody>
+                                    {loading ? (
+                                        [...Array(5)].map((_, index) => (
+                                            <tr key={index}>
+                                                <td><Skeleton height={20} width={20} /></td>
+                                                <td><Skeleton height={20} width={150} /></td>
+                                                <td><Skeleton height={40} width={80} /></td>
+                                                <td><Skeleton height={20} width={120} /></td>
                                                 <td className="text-end">
-                                                    <button
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#exampleModal"
-                                                        onClick={() => handleEdit(brand)}
-                                                        className="btn btn-sm btn-outline-primary me-2"
-                                                    >
-                                                        <i className="bi bi-pencil-fill"></i>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(brand._id)}
-                                                        className="btn btn-sm btn-outline-danger"
-                                                    >
-                                                        <i className="bi bi-trash-fill"></i>
-                                                    </button>
+                                                    <Skeleton height={30} width={30} inline className="me-2" />
+                                                    <Skeleton height={30} width={30} inline />
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
-                                        <tr>
-                                            <td colSpan="5" className="text-center text-muted py-4">
-                                                <i className="bi bi-info-circle me-2"></i> No brands found.
-                                            </td>
-                                        </tr>
+                                        currentItems.length > 0 ? (
+                                            currentItems.map((brand, index) => (
+                                                <tr key={brand._id} onClick={() => handleView(brand._id)} data-bs-toggle="modal" data-bs-target="#detailsmodel" style={{ cursor: "pointer" }}>
+                                                    <td>{indexOfFirstItem + index + 1}</td>
+                                                    <td className="fw-semibold">{brand.brandName}</td>
+                                                    <td>
+                                                        <img
+                                                            src={brand.brandLogo}
+                                                            alt={brand.brandName}
+                                                            className="shadow-sm border border-1 rounded bg-white"
+                                                            style={{ width: '80px', height: '40px', objectFit: 'contain' }}
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <span className="badge text-bg-light rounded-pill px-3 py-2">
+                                                            {new Date(brand.createdAt).toLocaleDateString()}
+                                                        </span>
+                                                    </td>
+                                                    <td className="text-end">
+                                                        <button
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#exampleModal"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleEdit(brand);
+                                                            }}
+                                                            className="btn btn-sm btn-outline-primary me-2"
+                                                        >
+                                                            <i className="bi bi-pencil-fill"></i>
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDelete(brand._id);
+                                                            }}
+                                                            className="btn btn-sm btn-outline-danger"
+                                                        >
+                                                            <i className="bi bi-trash-fill"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="5" className="text-center text-muted py-4">
+                                                    <i className="bi bi-info-circle me-2"></i> No brands found.
+                                                </td>
+                                            </tr>
+                                        )
                                     )}
-                                </tbody>
 
+
+                                </tbody>
                             </table>
                         </div>
+
+                        {/* Pagination Buttons */}
+                        {!loading && totalPages > 1 && (
+                            <div className="d-flex justify-content-between align-items-center py-3 px-2">
+                                <button
+                                    className="btn btn-outline-secondary btn-sm"
+                                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                >
+                                    Previous
+                                </button>
+                                <span className="text-muted small">
+                                    Page {currentPage} of {totalPages}
+                                </span>
+                                <button
+                                    className="btn btn-outline-secondary btn-sm"
+                                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
 
+                {/* Modals */}
                 <AddBrandModel editData={editData} fetchBrands={fetchBrands} />
                 <BrandDetailsModel brandId={brandId} />
-
-
             </div>
         </AdminLayout>
     );

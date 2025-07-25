@@ -1,6 +1,4 @@
 import './App.css'
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
-import '../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import AdminDashboard from './Views/Pages/AdminDashboard.jsx'
 import Login from './Views/Pages/Auth/Login.jsx'
@@ -10,16 +8,17 @@ import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { useEffect } from 'react'
 import AddProduct from './Views/Pages/products/AddProduct.jsx'
-
-
-
-
 import Brand from './Views/Pages/brands/Brand.jsx'
 import Category from './Views/Pages/categories/Category.jsx'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'react-loading-skeleton/dist/skeleton.css'
+// import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+
 
 function App() {
   useEffect(() => {
     AOS.init({ duration: 1000 });
+    import('bootstrap/dist/js/bootstrap.bundle.min.js');
   }, []);
 
   return (

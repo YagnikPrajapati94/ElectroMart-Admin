@@ -3,6 +3,7 @@ import axios from 'axios';
 import AdminLayout from '../AdminLayout';
 import AddCategoryModal from '../../Layout/Component/Models/AddCategoryModal';
 import { toast } from 'react-toastify';
+import Skeleton from 'react-loading-skeleton';
 
 const Category = () => {
     const baseURL = import.meta.env.VITE_API_URL;
@@ -12,6 +13,9 @@ const Category = () => {
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [editData, setEditData] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
 
 
 
@@ -51,7 +55,6 @@ const Category = () => {
     };
     const filteredCategories = categories.filter(cat => {
         const search = searchTerm.toLowerCase();
-
         const brand = cat.brand?.brandName?.toLowerCase() || '';
         const category = cat.category?.toLowerCase() || '';
         const subcategory = cat.subcategory?.toLowerCase() || '';
@@ -64,6 +67,13 @@ const Category = () => {
             createdDate.includes(search)
         );
     });
+
+    const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
+    const paginatedCategories = filteredCategories.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
 
 
 
@@ -110,13 +120,22 @@ const Category = () => {
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr>
-                                    <td colSpan="6" className="text-center py-4">
-                                        <div className="spinner-border text-primary" />
-                                    </td>
-                                </tr>
+                                [...Array(5)].map((_, index) => (
+                                    <tr key={index}>
+                                        <td><Skeleton height={20} width={20} /></td>
+                                        <td><Skeleton height={20} width={100} /></td>
+                                        <td><Skeleton height={20} width={100} /></td>
+                                        <td><Skeleton height={20} width={100} /></td>
+                                        <td><Skeleton height={20} width={100} /></td>
+                                        <td className="text-end">
+                                            <Skeleton height={30} width={30} inline className="me-2" />
+                                            <Skeleton height={30} width={30} inline />
+                                        </td>
+                                    </tr>
+                                ))
                             ) : filteredCategories.length > 0 ? (
-                                filteredCategories.map((cat, index) => (
+                                paginatedCategories.map((cat, index) => (
+
                                     <tr key={cat._id}>
                                         <td>{index + 1}</td>
                                         <td>{cat.brand?.brandName || "N/A"}</td>
@@ -152,10 +171,34 @@ const Category = () => {
                                     </td>
                                 </tr>
                             )}
+
                         </tbody>
 
                     </table>
                 </div>
+
+                {!loading && totalPages > 1 && (
+                    <div className="d-flex justify-content-between align-items-center py-3 px-2">
+                        <button
+                            className="btn btn-outline-secondary btn-sm"
+                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                        >
+                            Previous
+                        </button>
+                        <span className="text-muted small">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                            className="btn btn-outline-secondary btn-sm"
+                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next
+                        </button>
+                    </div>
+                )}
+
             </div>
             <AddCategoryModal
                 fetchCategories={fetchCategories}

@@ -1,8 +1,5 @@
 import React from 'react'
 import AdminLayout from './AdminLayout'
-import { signOut } from 'firebase/auth';
-import { auth } from '../config/firebase';
-import { useNavigate } from 'react-router-dom';
 import DashboardCard from '../Layout/Component/Cards/DashboardCard';
 import { useState } from 'react';
 import axios from 'axios';
