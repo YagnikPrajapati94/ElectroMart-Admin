@@ -1,0 +1,195 @@
+.admin-input{
+  padding: 13px !important;
+}
+html {
+  overflow-y: scroll !important; /* Always reserve vertical scrollbar space */
+}
+
+body{
+ /* background: linear-gradient(to right, #eef2f3, #8e9eab); */
+ /* background: linear-gradient(to right, #fdfcfb, #e2d1c3); */
+ /* background: linear-gradient(to right, #a1c4fd, #c2e9fb); */
+ /* background: linear-gradient(135deg, #f8f9fa, #e9ecef); */
+ /* background: linear-gradient(to right, #dfe9f3, #ffffff); */
+ background-color: #f8f9fa    !important;
+  font-family: 'Inter', 'Segoe UI', sans-serif !important;
+}
+.logo-main {
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 3px;
+
+  color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  font-family: 'Poppins', sans-serif;
+}
+
+.logo-slogan {
+  font-weight: 500;
+  color: #FF7844;
+  /* opacity: 0.8; */
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  letter-spacing: 4px;
+}
+
+.navbar-brand svg {
+  color: #FF7844; /* Or any accent brand color */
+  transition: transform 0.2s ease-in-out;
+}
+
+
+input,select{
+  box-shadow: none !important;
+}
+table{
+  min-width: 800px !important;
+}
+.nav-menu{
+  transition: all 0.4s ease-in-out !important;
+}
+@media (max-width: 992px) {
+  .nav-menu {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+  }
+
+}
+
+.nav-list .nav-item{
+  transition: all 0.4s ease-in-out !important;
+  border-radius: 8px !important;
+}
+.nav-list .nav-item .nav-content{
+  /* background-color: #F5F7FD !important; */
+   text-decoration: none !important;
+  color: #B9BABF !important;
+}
+.nav-list .nav-item:hover{
+  background-color:rgba(0, 0, 0, 0.1) !important;
+  border-radius: 8px !important;
+}
+.offcanvas{
+  transition: all 0.4s ease-in-out !important;
+  background-color: black !important;
+  color: #B9BABF !important;
+}
+.offcanvas-body{
+  background-color: black !important;
+
+}
+.offcanvas-header{
+  height: 13vh !important;
+  /* background-color: white !important; */
+}
+.collapse-list{
+  background-color:#1015289c !important;
+
+  transition: all 0.4s ease-in-out !important;
+}
+.active{
+  background-color:#1015289c !important;
+  /* color: aqua !important; */
+  /* color: rgb(104, 97, 206) !important; */
+  position: relative;
+}
+.active::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background-color: rgb(104, 97, 206) !important;
+  
+}
+.box-hover{
+  transition: all 0.3s ease-in-out !important;
+  position: relative;
+}
+.box-hover:hover::before{
+ content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background-color: rgb(104, 97, 206) !important;
+  transition: all 0.4s ease-in-out !important;
+}
+.box-hover:focus::before{
+ content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background-color: rgb(104, 97, 206) !important;
+}
+.box-hover:focus{
+    background-color:#1015289c !important;
+
+}
+.box-hover:hover{
+    background-color:#1015289c !important;
+
+}
+.child-color{
+  color: #B9BABF !important;
+}
+.child-active{
+  color: rgb(104, 97, 206) !important;
+}
+.offcanvas .show{
+  background-color: #1015289c !important;
+}
+
+
+
+
+@media (min-width: 992px) {
+    .offcanvas{
+    width: 320px !important;
+    transform: none !important;
+    visibility: visible !important;
+  }
+  .navbar,main{
+    margin-left: 320px !important;
+  }
+  .navbar,.offcanvas-header{
+  height: 10vh !important;
+}
+}
+
+::-webkit-scrollbar{
+  width: 0px !important;
+  height: 5px !important;
+background-color: rgb(104, 97, 206) !important;
+border-radius: 50px !important;
+}
+::-webkit-scrollbar-thumb{
+  background-color: #B9BABF !important;
+border-radius: 50px !important;
+
+}
+
+.card-icon{
+  padding: 20px 30px !important;
+}
+.hover-shadow {
+  transition: all 0.3s ease-in-out;
+}
+table th,
+table td {
+  padding: 0.75rem 1.25rem !important; /* Top/Bottom: 12px, Left/Right: 20px */
+  vertical-align: middle;
+}
+.modal-dialog{
+  transition: all 0.5s ease-in-out !important;
+}
+
+
+
+
+  
+
+
