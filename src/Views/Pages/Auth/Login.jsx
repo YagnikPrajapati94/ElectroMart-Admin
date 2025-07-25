@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import axios from "axios";
-import Logo from "../../Layout/Component/logo";
 
 export default function Login() {
     const apiUrl = import.meta.env.VITE_API_URL;
@@ -68,7 +67,68 @@ export default function Login() {
                     data-aos="fade"
                 >
                     <div className=" mx-auto">
-                        <Logo />
+                        <svg
+
+                            // className='border'
+                            style={{ width: '100%', maxWidth: '250px' }}
+                            // width="350"
+                            // height="80"
+                            viewBox="0 0 250 80"
+                            xmlns="http://www.w3.org/2000/svg"
+                            role="img"
+                            aria-label="ElectroMart logo"
+                        >
+                            {/* Icon group: scaled up and centered vertically */}
+                            <g transform="translate(20, 20) scale(1.5)">
+                                <path
+                                    stroke="currentColor"
+                                    strokeWidth={1.5}
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    fill="none"
+                                    d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"
+                                />
+                            </g>
+
+                            {/* Text group: shifted closer to icon */}
+                            <g transform="translate(70, 30)">
+                                <text
+                                    x="0"
+                                    y="0"
+                                    fontFamily="Poppins, sans-serif"
+                                    fontSize="24"
+                                    fill="#0D6EFD"
+                                    fontWeight="600"
+                                    dominantBaseline="middle"
+                                    textAnchor="start"
+                                >
+                                    Electro
+                                </text>
+                                <text
+                                    x="90"
+                                    y="0"
+                                    fontFamily="Poppins, sans-serif"
+                                    fontSize="24"
+                                    fill="#FF6F00"
+                                    fontWeight="700"
+                                    dominantBaseline="middle"
+                                    textAnchor="start"
+                                >
+                                    Mart
+                                </text>
+                                <text
+                                    x="0"
+                                    y="25"
+                                    fontFamily="Poppins, sans-serif"
+                                    fontSize="13"
+                                    fill="gray"
+                                    dominantBaseline="middle"
+                                    textAnchor="start"
+                                >
+                                    Online Shopping
+                                </text>
+                            </g>
+                        </svg>
                     </div>
                     <h2 data-aos="slide-up" data-delay="100" className="fw-bold mb-3">Welcome to ElectroMart Admin Portal</h2>
                     <p data-aos="slide-up" data-delay="200" className="text-muted" style={{ maxWidth: "400px" }}>
