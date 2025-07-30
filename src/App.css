@@ -39,7 +39,7 @@ body{
 }
 
 
-input,select{
+input,select,textarea{
   box-shadow: none !important;
 }
 table{
@@ -142,6 +142,9 @@ table{
 .offcanvas .show{
   background-color: #1015289c !important;
 }
+.accordion-collapse , .accordion-button{
+  transition: all 0.5s ease-in-out !important;
+}
 
 
 
@@ -185,6 +188,10 @@ table td {
 }
 .modal-dialog{
   transition: all 0.5s ease-in-out !important;
+}
+.subcategory{
+  width: fit-content !important;
+  /* padding: 0 !important; */
 }
 
 

@@ -1,130 +1,119 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useRef } from 'react';
 
 const baseURL = import.meta.env.VITE_API_URL;
 
-const AddCategoryModal = ({ fetchCategories, editData }) => {
-    const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm();
+const AddCategoryModal = ({ fetchCategories }) => {
+    const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
     const [brands, setBrands] = useState([]);
     const [loading, setLoading] = useState(false);
     const token = sessionStorage.getItem("adminToken");
     const closeBtnRef = useRef();
 
-    // Fetch brand list for dropdown
     const getBrands = async () => {
         try {
             const res = await axios.get(`${baseURL}/api/getBrands`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                headers: { Authorization: `Bearer ${token}` }
             });
             setBrands(res.data?.brands || []);
-        } catch (error) {
-            console.error("Failed to fetch brands", error);
+        } catch (err) {
+            console.error("Failed to fetch brands", err);
         }
     };
 
     useEffect(() => {
         getBrands();
-        if (editData) {
-            setValue('category', editData.category);
-            setValue('subcategory', editData.subcategory);
-            setValue('brand', editData.brand);
-        }
-    }, [editData, setValue]);
+    }, []);
 
     const handleFormSubmit = async (data) => {
         setLoading(true);
         try {
-            if (editData) {
-                await axios.put(`${baseURL}/api/updateCategory/${editData._id}`, data, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                toast.success("Category updated successfully");
-            } else {
-                await axios.post(`${baseURL}/api/addCategory`, data, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                toast.success("Category added successfully");
-            }
 
+            await axios.post(`${baseURL}/api/addCategory`, data, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            toast.success("Category added successfully");
             reset();
             fetchCategories?.();
-        } catch (error) {
-            toast.error("Failed to save category");
-            console.error(error);
+            closeBtnRef.current.click();
+        } catch (err) {
+            console.error("Error adding category:", err);
+            toast.error("Failed to add category");
         } finally {
             setLoading(false);
-            closeBtnRef.current.click(); // This will close the modal
         }
     };
 
-    const handleClose = () => {
-        reset();
-    };
+    const handleClose = () => reset();
 
     return (
         <div className="modal fade" id="categoryModal" aria-hidden="true">
             <div className="modal-dialog modal-dialog-centered">
-                <div className="modal-content bg-black text-light">
+                <div className="modal-content bg-dark text-light">
                     <div className="modal-header">
-                        <h5 className="modal-title">{editData ? "Update" : "Add"} Category</h5>
-                        <button ref={closeBtnRef} type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" onClick={handleClose}></button>
+                        <h5 className="modal-title">Add Category</h5>
+                        <button
+                            type="button"
+                            className="btn-close btn-close-white shadow-none"
+                            data-bs-dismiss="modal"
+                            onClick={handleClose}
+                            ref={closeBtnRef}
+                        ></button>
                     </div>
                     <div className="modal-body">
                         <form onSubmit={handleSubmit(handleFormSubmit)} className="d-grid gap-3">
-                            {/* Category */}
-                            <div>
-                                <label className="form-label">Category</label>
-                                <input
-                                    {...register("category", { required: "Category is required" })}
-                                    className={`form-control ${errors.category ? "is-invalid" : ""}`}
-                                    placeholder="Enter category name"
-                                />
-                                {errors.category && <div className="invalid-feedback">{errors.category.message}</div>}
-                            </div>
-
-                            {/* Subcategory */}
-                            <div>
-                                <label className="form-label">Subcategory</label>
-                                <input
-                                    {...register("subcategory", { required: "Subcategory is required" })}
-                                    className={`form-control ${errors.subcategory ? "is-invalid" : ""}`}
-                                    placeholder="Enter subcategory name"
-                                />
-                                {errors.subcategory && <div className="invalid-feedback">{errors.subcategory.message}</div>}
-                            </div>
-
-                            {/* Brand Dropdown */}
+                            {/* Brand Selection */}
                             <div>
                                 <label className="form-label">Select Brand</label>
                                 <select
-                                    {...register("brand", { required: "Please select a brand" })}
-                                    className={`form-select ${errors.brand ? "is-invalid" : ""}`}
+                                    {...register("brand", { required: "Brand is required" })}
+                                    className={`form-select ${errors.brandId ? "is-invalid" : ""}`}
                                 >
-                                    <option value="">-- Select a Brand --</option>
+                                    <option value="">-- Select Brand --</option>
                                     {brands.map((brand) => (
                                         <option key={brand._id} value={brand._id}>
                                             {brand.brandName}
                                         </option>
                                     ))}
                                 </select>
-                                {errors.brand && <div className="invalid-feedback">{errors.brand.message}</div>}
+                                {errors.brandId && <div className="invalid-feedback">{errors.brandId.message}</div>}
+                            </div>
+
+                            {/* Category Input */}
+                            <div>
+                                <label className="form-label">Category</label>
+                                <input
+                                    {...register("category", { required: "Category is required" })}
+                                    className={`form-control ${errors.category ? "is-invalid" : ""}`}
+                                    placeholder="e.g., Laptop"
+                                />
+                                {errors.category && <div className="invalid-feedback">{errors.category.message}</div>}
+                            </div>
+
+                            {/* Subcategory Input */}
+                            <div>
+                                <label className="form-label">Subcategory</label>
+                                <input
+                                    {...register("subcategory", { required: "Subcategory is required" })}
+                                    className={`form-control ${errors.subcategory ? "is-invalid" : ""}`}
+                                    placeholder="e.g., Gaming"
+                                />
+                                {errors.subcategory && <div className="invalid-feedback">{errors.subcategory.message}</div>}
                             </div>
 
                             {/* Submit */}
                             <button
                                 type="submit"
-                                className={`btn ${editData ? "btn-warning" : "btn-primary"} w-100 shadow-none`}
+                                className="btn btn-success w-100 shadow-none"
                                 disabled={loading}
                             >
                                 {loading ? (
-                                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span className="spinner-border spinner-border-sm" />
                                 ) : (
-                                    `${editData ? "Update" : "Add"} Category`
+                                    "Add Category"
                                 )}
                             </button>
                         </form>

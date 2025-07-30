@@ -13,6 +13,7 @@ import AddProduct from './Views/Pages/products/AddProduct.jsx'
 import Brand from './Views/Pages/brands/Brand.jsx'
 import Category from './Views/Pages/categories/Category.jsx'
 import 'react-loading-skeleton/dist/skeleton.css'
+import Unauthorized from './Views/Pages/Unauthorized.jsx'
 
 
 function App() {
@@ -40,9 +41,12 @@ function App() {
           <Route path='/' element={<Login />} />
           <Route path='/login' element={<Login />} />
           <Route path='/admin/dashboard' element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
-          <Route path='/admin/products/add' element={<PrivateRoute><AddProduct /></PrivateRoute>} />
+          {/* <Route path='/admin/products/add' element={<PrivateRoute><AddProduct /></PrivateRoute>} /> */}
           <Route path='/admin/brands' element={<PrivateRoute><Brand /></PrivateRoute>} />
           <Route path='/admin/categories' element={<PrivateRoute><Category /></PrivateRoute>} />
+
+
+          <Route path='*' element={<Unauthorized />} />
         </Routes>
       </Router>
     </>

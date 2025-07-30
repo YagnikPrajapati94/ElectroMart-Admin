@@ -4,17 +4,20 @@ import AdminLayout from '../AdminLayout';
 import AddCategoryModal from '../../Layout/Component/Models/AddCategoryModal';
 import { toast } from 'react-toastify';
 import Skeleton from 'react-loading-skeleton';
+import { useForm } from 'react-hook-form';
 
 const Category = () => {
     const baseURL = import.meta.env.VITE_API_URL;
     const token = sessionStorage.getItem('adminToken');
+    const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
 
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [editData, setEditData] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    const [openAccordionId, setOpenAccordionId] = useState(null);
+
+
 
 
 
@@ -23,56 +26,121 @@ const Category = () => {
         setLoading(true);
         try {
             const res = await axios.get(`${baseURL}/api/getCategories`);
-            setCategories(res.data.categories || []);
+            console.log(res.data.result);
+            setCategories(res.data.result);
         } catch (error) {
             console.error("Failed to fetch categories:", error.message);
         }
+
         setLoading(false);
+
+
     };
 
     useEffect(() => {
         fetchCategories();
     }, []);
+    const filteredCategories = categories.filter((cat) => {
+        const brandMatch = cat.brandName.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const categoryMatch = cat.categoryMap.some((item) =>
+            item.category.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        const subcategoryMatch = cat.categoryMap.some((item) =>
+            item.subcategories.some((sub) =>
+                sub.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+        );
+
+        return brandMatch || categoryMatch || subcategoryMatch;
+    });
 
 
+    const onSubmit = async (data, id) => {
+        try {
+            // const category = data
+            const res = await axios.put(`${baseURL}/api/updateCategory/${id}`, { category: data }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            // console.log(data, id);
+            toast.success("Category updated successfully");
+            fetchCategories?.();
 
-    const handleEdit = (cat) => {
-        setEditData(cat);
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to update category");
+
+        }
+    }
+
+
+    const handleSubUpdate = async (id, oldSub, newSub) => {
+        try {
+
+            // console.log(categoryId, oldSub, newSub);
+
+            const res = await axios.put(`${baseURL}/api/updateSubcategory/${id}`, {
+                oldSubcategory: oldSub,
+                newSubcategory: newSub,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log(res);
+
+
+            if (res.status === 200) {
+                toast.success(res.data.message);
+                fetchCategories?.();
+            } else {
+                // console.error("❌ Update failed");
+                toast.error(res.data.message);
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.message || err.message);
+        }
     };
 
-    const handleDelete = async (id) => {
+
+    const handleDeleteCategory = async (id) => {
         try {
             const res = await axios.delete(`${baseURL}/api/deleteCategory/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-            toast.success("Category deleted successfully");
-            fetchCategories();
-        } catch (error) {
-            console.log(error);
+            if (res.status === 200) {
+                toast.success(res.data.message);
+                fetchCategories?.();
+            } else {
+                toast.error(res.data.message);
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.message || err.message);
         }
     };
-    const filteredCategories = categories.filter(cat => {
-        const search = searchTerm.toLowerCase();
-        const brand = cat.brand?.brandName?.toLowerCase() || '';
-        const category = cat.category?.toLowerCase() || '';
-        const subcategory = cat.subcategory?.toLowerCase() || '';
-        const createdDate = new Date(cat.createdAt).toLocaleDateString().toLowerCase();
 
-        return (
-            brand.includes(search) ||
-            category.includes(search) ||
-            subcategory.includes(search) ||
-            createdDate.includes(search)
-        );
-    });
-
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredCategories.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
-
+    const handleSubDelete = async (id, subcategory) => {
+        try {
+            const res = await axios.delete(`${baseURL}/api/deleteSubcategory/${id}/${subcategory}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (res.status === 200) {
+                toast.success(res.data.message);
+                fetchCategories?.();
+            } else {
+                toast.error(res.data.message);
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.message || err.message);
+        }
+    };
 
 
 
@@ -94,7 +162,7 @@ const Category = () => {
                     </div>
                 </div>
                 <div className="row mb-3">
-                    <div className="col-md-4 ms-auto">
+                    <div className="col-md-4 ms-auto mb-3">
                         <input
                             type="search"
                             className="form-control shadow-sm"
@@ -104,106 +172,149 @@ const Category = () => {
                         />
                     </div>
                 </div>
+                <div className="row">
+                    {
+                        loading ? (
 
-                <div className="table-responsive rounded-4 border shadow-sm">
-                    <table className="table table-hover align-middle mb-0 text-nowrap">
-                        <thead className="table-light">
-                            <tr className="align-middle text-uppercase small text-secondary">
-                                <th style={{ minWidth: '50px' }}>#</th>
-                                <th style={{ minWidth: '200px' }}>Brand</th>
-                                <th style={{ minWidth: '200px' }}>Category</th>
-                                <th style={{ minWidth: '200px' }}>Subcategory</th>
-                                <th style={{ minWidth: '160px' }}>Created At</th>
-                                <th className="text-end" style={{ minWidth: '120px' }}>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                [...Array(5)].map((_, index) => (
-                                    <tr key={index}>
-                                        <td><Skeleton height={20} width={20} /></td>
-                                        <td><Skeleton height={20} width={100} /></td>
-                                        <td><Skeleton height={20} width={100} /></td>
-                                        <td><Skeleton height={20} width={100} /></td>
-                                        <td><Skeleton height={20} width={100} /></td>
-                                        <td className="text-end">
-                                            <Skeleton height={30} width={30} inline className="me-2" />
-                                            <Skeleton height={30} width={30} inline />
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : filteredCategories.length > 0 ? (
-                                currentItems.map((cat, index) => (
+                            <>
 
-                                    <tr key={cat._id}>
-                                        <td>{indexOfFirstItem + index + 1}</td>
-                                        <td>{cat.brand?.brandName || "N/A"}</td>
-                                        <td className="fw-semibold">{cat.category}</td>
-                                        <td>{cat.subcategory}</td>
-                                        <td>
-                                            <span className="badge text-bg-light rounded-pill px-3 py-2">
-                                                {new Date(cat.createdAt).toLocaleDateString()}
-                                            </span>
-                                        </td>
-                                        <td className="text-end">
-                                            <button
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#categoryModal"
-                                                className="btn btn-sm btn-outline-primary me-2"
-                                                onClick={() => handleEdit(cat)}
-                                            >
-                                                <i className="bi bi-pencil-fill"></i>
-                                            </button>
-                                            <button
-                                                className="btn btn-sm btn-outline-danger"
-                                                onClick={() => handleDelete(cat._id)}
-                                            >
-                                                <i className="bi bi-trash-fill"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="6" className="text-center text-muted py-4">
-                                        <i className="bi bi-info-circle me-2"></i> No categories found.
-                                    </td>
-                                </tr>
-                            )}
+                                <div className="col-lg-6  my-1">
+                                    <Skeleton count={6} height={80} />
+                                </div>
 
-                        </tbody>
+                                <div className="col-lg-6  my-1">
+                                    <Skeleton count={6} height={80} />
+                                </div>
+                            </>
 
-                    </table>
+
+                        ) : (
+
+
+                            <div className="">
+                                <div className="accordion row" id="brandAccordion">
+                                    {filteredCategories.map((cat, index) => (
+                                        <div key={index} className="col-lg-6">
+                                            <div className="accordion-item mb-3 border-0 shadow-sm rounded-4 overflow-hidden">
+                                                <h2 className="accordion-header" id={`heading-${index}`}>
+                                                    <button
+                                                        className={`accordion-button  shadow-none collapsed d-flex justify-content-between  px-4 py-3`}
+                                                        type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target={`#collapse-${index}`}
+                                                        onClick={() => setOpenAccordionId(cat._id)}
+                                                        aria-expanded={openAccordionId === cat._id}
+                                                        aria-controls={`collapse-${index}`}
+                                                    >
+                                                        <div className="d-flex align-items-center gap-3">
+                                                            <img
+                                                                src={cat.brandLogo}
+                                                                alt="Brand"
+                                                                className="img-thumbnail bg-white border rounded-3"
+                                                                style={{ width: "60px", height: "40px", objectFit: "contain" }}
+                                                            />
+                                                            <h5 className="mb-0 fw-semibold text-dark">{cat.brandName}</h5>
+                                                        </div>
+                                                    </button>
+                                                </h2>
+                                                <div
+                                                    id={`collapse-${index}`}
+                                                    className={`accordion-collapse collapse ${openAccordionId === cat._id ? "show" : ""}`}
+                                                    aria-labelledby={`heading-${index}`}
+                                                    data-bs-parent="#brandAccordion"
+                                                >
+                                                    <div className="accordion-body p-3 bg-white">
+                                                        <div className="row g-4">
+                                                            {
+                                                                cat.categoryMap.length > 0 ? (
+                                                                    (
+                                                                        cat.categoryMap.map((item, idx) => (
+                                                                            <div key={idx} className="col-12  col-md-6 col-lg-12">
+                                                                                <div className="border rounded-4 p-3 h-100 shadow-sm bg-light">
+                                                                                    <div className=" d-flex align-items-center mb-3">
+                                                                                        <input
+                                                                                            type="text"
+                                                                                            defaultValue={item.category}
+
+                                                                                            {...register(`newCategory-${item._id}`, { required: true })}
+                                                                                            className={`form-control rounded-start-3 rounded-end-0  border bg-transparent fw-semibold  ${errors[`newCategory-${item._id}`] ? "is-invalid" : ""}`}
+                                                                                            placeholder="Category Name"
+                                                                                            onKeyDown={(e) => {
+                                                                                                if (e.key === "Enter") {
+                                                                                                    handleSubmit((formData) => {
+                                                                                                        onSubmit(formData[`newCategory-${item._id}`], item._id);
+                                                                                                    })();
+                                                                                                    e.preventDefault();
+                                                                                                }
+                                                                                            }}
+                                                                                        />
+                                                                                        <button onClick={() => handleDeleteCategory(item._id)} className='btn btn-danger rounded-0'><i className="bi bi-trash"></i></button>
+                                                                                    </div>
+
+
+                                                                                    <div className="">
+                                                                                        {item.subcategories.map((sub, i) => (
+                                                                                            <div key={i} className='d-flex align-items-center my-2 gap-2 '>
+                                                                                                <input
+                                                                                                    aria-describedby="basic-addon1"
+                                                                                                    key={i}
+                                                                                                    defaultValue={sub}
+                                                                                                    {...register(`sub-${item._id}-${i}`, { required: true })}
+                                                                                                    className={`form-control  bg-success bg-opacity-25 rounded-5 fw-semibold ${errors[`sub-${item._id}-${i}`] ? "is-invalid" : ""}`}
+                                                                                                    style={{
+                                                                                                        // width: "fit-content",
+                                                                                                        // minWidth: "110px",
+                                                                                                        fontSize: "0.85rem",
+                                                                                                    }}
+                                                                                                    onKeyDown={(e) => {
+                                                                                                        if (e.key === "Enter") {
+                                                                                                            handleSubmit((formData) => {
+                                                                                                                handleSubUpdate(item._id, sub, formData[`sub-${item._id}-${i}`]);
+                                                                                                            })();
+                                                                                                            e.preventDefault();
+                                                                                                        }
+                                                                                                    }}
+                                                                                                />
+                                                                                                <button onClick={() => handleSubDelete(item._id, sub)} id="basic-addon1" className='btn-close input-group-text'></button>
+                                                                                            </div>
+                                                                                        ))}
+
+
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        ))
+                                                                    )
+                                                                ) : (
+                                                                    <div className="col-12">
+                                                                        <p className="text-muted text-center m-0">⚠️ No Categories</p>
+                                                                    </div>
+                                                                )
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                            </div>
+
+
+
+
+                        )
+                    }
                 </div>
-
-                {!loading && totalPages > 1 && (
-                    <div className="d-flex justify-content-between align-items-center py-3 px-2">
-                        <button
-                            className="btn btn-outline-secondary btn-sm"
-                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                        >
-                            Previous
-                        </button>
-                        <span className="text-muted small">
-                            Page {currentPage} of {totalPages}
-                        </span>
-                        <button
-                            className="btn btn-outline-secondary btn-sm"
-                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                        >
-                            Next
-                        </button>
-                    </div>
-                )}
 
             </div>
             <AddCategoryModal
                 fetchCategories={fetchCategories}
                 editData={editData}
             />
-        </AdminLayout>
+        </AdminLayout >
     );
 };
 

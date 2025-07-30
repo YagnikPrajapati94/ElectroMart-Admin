@@ -146,7 +146,7 @@ const Brand = () => {
                                                         </span>
                                                     </td>
                                                     <td className="text-end">
-                                                        <button
+                                                        {/* <button
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#detailsmodel"
 
@@ -154,7 +154,7 @@ const Brand = () => {
                                                             className="btn btn-sm btn-outline-info"
                                                         >
                                                             <i className="bi bi-eye"></i>
-                                                        </button>
+                                                        </button> */}
                                                         <button
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#exampleModal"
