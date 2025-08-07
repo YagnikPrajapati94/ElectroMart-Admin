@@ -59,8 +59,8 @@ export default function Login() {
 
   return (
     <div
-      className="container-fluid align-content-center "
-      style={{ minHeight: "100vh" }}
+      className="container-fluid align-content-center login "
+    
     >
       <div className="row justify-content-between">
         {/* Right Side - Login */}
