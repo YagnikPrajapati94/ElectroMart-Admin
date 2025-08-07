@@ -26,14 +26,15 @@ const AdminDashboard = () => {
 
     return (
         <AdminLayout>
-            <div className="container-fluid py-3">
+            <div className="container-fluid p-4">
                 <div className="row">
                     {/* <div className="col-12 fs-5 mb-3 text-dark bg-body-tertiary py-1 shadow-lg">
                         Dashboard
                     </div> */}
                 </div>
-                <div className="row">
+                <div className="row ">
                     {/* <DashboardCard bg={"bg-primary"} path={"/admin/products/add"} title={"Total Products"} count={100} icon="bi-box-seam" /> */}
+                    <DashboardCard bg={"bg-danger"} path={"/admin/brands"} title={"Total Brands"} count={brands.length} icon="bi-tags-fill" />
                     <DashboardCard bg={"bg-danger"} path={"/admin/brands"} title={"Total Brands"} count={brands.length} icon="bi-tags-fill" />
                 </div>
             </div>

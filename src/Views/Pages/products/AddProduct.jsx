@@ -12,8 +12,10 @@ const AddProduct = () => {
     const token = sessionStorage.getItem('adminToken');
     const [brands, setBrands] = useState([]);
     const [brandID, setBrandID] = useState(null);
-    const [viewCategory, setViewCategory] = useState(false);
-    const [category, setCategory] = useState(null);
+    const [categoryID, setCategoryID] = useState(null);
+    // const [viewCategory, setViewCategory] = useState(false);
+    const [category, setCategory] = useState([]);
+    const [subcategory, setSubcategory] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(false);
 
     // const [subcategories, setSubcategories] = useState([]);
@@ -26,6 +28,7 @@ const AddProduct = () => {
             const res = await axios.get(`${baseURL}/api/getBrands`);
             // console.log(res.data.brands);
             setBrands(res.data.brands);
+            // setViewCategory(true);
 
         } catch (error) {
             console.log(error);
@@ -38,32 +41,15 @@ const AddProduct = () => {
     })
 
     const handleFetchBrandDetails = async (id) => {
-        // console.log(id);
-        setValue("category", "");
-        setValue("subCategory", "");
-        setSelectedCategory(false);
-
         try {
-            const res = await axios.get(`${baseURL}/api/getBrandDetails/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            console.log(res.data)
-            if (Object.keys(res.data.categoryMap).length === 0) {
-                toast.warning("Brand has no categories");
-                setViewCategory(false);
-                setSelectedCategory(false);
-                return;
-            }
-
-            setCategory(res.data.categoryMap);
-            setViewCategory(true);
-            // reset("brand", res.data.brand.brandName);
-            setValue("brand", res.data.brand.brandName);
+            const res = await axios.get(`${baseURL}/api/getCategoriesByBrand/${id}`);
+            console.log(res.data.categories);
+            setCategory(res.data.categories);
+            setValue("brand", brands.find(brand => brand._id === id).brandName);
 
         } catch (error) {
             console.log(error);
+
         }
     }
 
@@ -73,6 +59,21 @@ const AddProduct = () => {
 
         }
     }, [brandID])
+
+    const handleCategory = () => {
+        setValue("category", category.find(cat => cat._id === categoryID).category);
+        setSelectedCategory(category.find(cat => cat._id === categoryID).category);
+        setSubcategory(category.find(cat => cat._id === categoryID).subcategory);
+        console.log(category.find(cat => cat._id === categoryID).subcategory);
+
+    }
+
+    useEffect(() => {
+        if (categoryID !== null && categoryID !== "") {
+            handleCategory();
+        }
+    }, [categoryID])
+
     const handleProduct = async (data) => {
 
         try {
@@ -169,30 +170,31 @@ const AddProduct = () => {
                                 <div className="col-xl-4">
                                     <div className="mb-3">
                                         <label className="form-label mb-1">Select Product Category</label>
-                                        <select onClick={(e) => setSelectedCategory(e.target.value)} disabled={!viewCategory} {...register("category", { required: true })} className={`form-select ${errors.category ? "is-invalid" : ""}`}>
+                                        <select onClick={(e) => setCategoryID(e.target.value)} disabled={category.length === 0} className={`form-select ${errors.category ? "is-invalid" : ""}`}>
                                             <option value="">Select Category</option>
-                                            {Object.entries(category || {}).map(([category]) => (
-                                                <option key={category} value={category}>{category}</option>
-                                            ))}
-
+                                            {
+                                                category.map((cat, index) => (
+                                                    <option key={cat._id} value={cat._id}>{cat.category}</option>
+                                                ))
+                                            }
                                         </select>
                                     </div>
                                 </div>
                                 <div className="col-xl-4">
                                     <div className="mb-3">
                                         <label className="form-label mb-1">Select Product SubCategory</label>
-                                        <select disabled={!selectedCategory} {...register("subCategory", { required: true })} className={`form-select ${errors.category ? "is-invalid" : ""}`}>
-                                            <option value="">Select Category</option>
+                                        <select {...register("subCategory", { required: true })} disabled={categoryID === null} className={`form-select ${errors.category ? "is-invalid" : ""}`}>
+                                            <option value="">Select SubCategory</option>
                                             {
-                                                selectedCategory && category[selectedCategory].map((subCategory) => (
-                                                    <option key={subCategory} value={subCategory}>{subCategory}</option>
+                                                subcategory.map((subcat, index) => (
+                                                    <option key={index} value={subcat}>{subcat}</option>
                                                 ))
                                             }
                                         </select>
                                     </div>
                                 </div>
                                 {fields.map((field, index) => {
-                                    // const name = `attr_${field.label}`;
+
                                     return (
                                         <div className="mb-3" key={index}>
                                             <label className="form-label">{field.label}</label>

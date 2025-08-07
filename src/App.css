@@ -11,27 +11,10 @@ body{
  /* background: linear-gradient(to right, #a1c4fd, #c2e9fb); */
  /* background: linear-gradient(135deg, #f8f9fa, #e9ecef); */
  /* background: linear-gradient(to right, #dfe9f3, #ffffff); */
- background-color: #f8f9fa    !important;
+ background-color: #ebf1f8    !important;
   font-family: 'Inter', 'Segoe UI', sans-serif !important;
 }
-.logo-main {
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: 3px;
 
-  color: #ffffff;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  font-family: 'Poppins', sans-serif;
-}
-
-.logo-slogan {
-  font-weight: 500;
-  color: #FF7844;
-  /* opacity: 0.8; */
-  font-family: 'Poppins', sans-serif;
-  font-size: 10px;
-  letter-spacing: 4px;
-}
 
 .navbar-brand svg {
   color: #FF7844; /* Or any accent brand color */
@@ -73,10 +56,7 @@ table{
   background-color: black !important;
   color: #B9BABF !important;
 }
-.offcanvas-body{
-  background-color: black !important;
 
-}
 .offcanvas-header{
   height: 13vh !important;
   /* background-color: white !important; */
@@ -193,6 +173,8 @@ table td {
   width: fit-content !important;
   /* padding: 0 !important; */
 }
+
+
 
 
 
