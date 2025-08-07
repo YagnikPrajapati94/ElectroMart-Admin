@@ -59,12 +59,12 @@ export default function Login() {
 
   return (
     <div
-      className="container-fluid align-content-center"
-      style={{ height: "100vh" }}
+      className="container-fluid align-content-center "
+      style={{ minHeight: "100vh" }}
     >
       <div className="row justify-content-between">
         {/* Right Side - Login */}
-        <div className="col-lg-4 mx-auto p-0 align-content-center">
+        <div className="col-xl-4 col-lg-8 mx-auto p-0 align-content-center">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="rounded-5 mx-auto p-md-5 p-3"
