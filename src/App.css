@@ -14,6 +14,9 @@ body{
  background-color: #ebf1f8    !important;
   font-family: 'Inter', 'Segoe UI', sans-serif !important;
 }
+.login-btn{
+  background: linear-gradient(90deg, #ff6cac, #7366ff) !important;
+}
 
 
 .navbar-brand svg {
