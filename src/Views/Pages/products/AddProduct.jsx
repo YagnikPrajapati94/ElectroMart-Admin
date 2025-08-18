@@ -6,21 +6,30 @@ import { useEffect } from 'react'
 import axios from 'axios'
 import { useState } from 'react'
 import { use } from 'react'
+import BreadCrumb from '../../Layout/Component/BreadCrumb'
+import { speak } from '../../Layout/utils/speak'
 
 const AddProduct = () => {
     const baseURL = import.meta.env.VITE_API_URL;
     const token = sessionStorage.getItem('adminToken');
     const [brands, setBrands] = useState([]);
-    const [brandID, setBrandID] = useState(null);
+
     const [categoryID, setCategoryID] = useState(null);
-    // const [viewCategory, setViewCategory] = useState(false);
-    const [category, setCategory] = useState([]);
+    const [viewCategory, setViewCategory] = useState(false);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+
+    const [viewSubCategory, setViewSubCategory] = useState(false);
+
+    const [loading, setLoading] = useState(false);
     const [subcategory, setSubcategory] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState(false);
 
     // const [subcategories, setSubcategories] = useState([]);
     // const [viewSubCategory, setViewSubCategory] = useState(false);
-    const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm()
+    const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm()
+
+    const brandId = watch("brand");
+    const categoryId = watch("category");
 
 
     const handleFetchBrands = async () => {
@@ -39,40 +48,79 @@ const AddProduct = () => {
     useEffect(() => {
         handleFetchBrands();
     })
-
-    const handleFetchBrandDetails = async (id) => {
+    const fetchCategories = async () => {
         try {
-            const res = await axios.get(`${baseURL}/api/getCategoriesByBrand/${id}`);
-            console.log(res.data.categories);
-            setCategory(res.data.categories);
-            setValue("brand", brands.find(brand => brand._id === id).brandName);
+            const response = await axios.get(`${baseURL}/api/getCategoriesByBrand/${brandId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            // console.log(response);
 
+            console.log(response.data.categories);
+            setViewCategory(true);
+            toast.success("Categories Founded Successfully");
+            speak("Categories Founded Successfully");
+            // const data = response.data.result;
+            setCategories(response.data.categories);
         } catch (error) {
-            console.log(error);
+            console.error('Failed to fetch categories:', error);
+            toast.error(error.response.data.message);
+            speak(error.response.data.message);
+            setViewCategory(false);
 
+        }
+    };
+    useEffect(() => {
+        if (brandId) {
+            fetchCategories();
+        }
+    }, [brandId]);
+
+    const fetchSubCategories = async () => {
+        try {
+            // const data = {
+            //     categoryId,
+            //     brandId
+            // };
+            const response = await axios.get(`${baseURL}/api/getSubCategoriesByCategoryAndBrand/${categoryId}/${brandId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log(response.data.subcategories);
+            setSubcategory(response.data.subcategories);
+            speak("Subcategories fetched successfully");
+            setViewSubCategory(true);
+        } catch (error) {
+            console.error('Failed to fetch subcategories:', error);
+            toast.error(error.response.data.message);
+            speak(error.response.data.message);
+            setViewSubCategory(false);
         }
     }
+    useEffect(() => {
+        if (categoryId && brandId) {
+            fetchSubCategories();
+        }
+    }, [categoryId, brandId]);
+
+    const fetchCategoryById = async () => {
+        try {
+            const response = await axios.get(`${baseURL}/api/getCategoryById/${categoryId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log(response.data.category);
+            setSelectedCategory(response.data.category.category);
+        } catch (error) {
+            console.error('Failed to fetch category:', error);
+            toast.error(error.response.data.message);
+            speak(error.response.data.message);
+        }
+    };
 
     useEffect(() => {
-        if (brandID !== null && brandID !== "") {
-            handleFetchBrandDetails(brandID);
-
+        if (categoryId) {
+            fetchCategoryById(categoryId);
         }
-    }, [brandID])
+    }, [categoryId]);
 
-    const handleCategory = () => {
-        setValue("category", category.find(cat => cat._id === categoryID).category);
-        setSelectedCategory(category.find(cat => cat._id === categoryID).category);
-        setSubcategory(category.find(cat => cat._id === categoryID).subcategory);
-        console.log(category.find(cat => cat._id === categoryID).subcategory);
-
-    }
-
-    useEffect(() => {
-        if (categoryID !== null && categoryID !== "") {
-            handleCategory();
-        }
-    }, [categoryID])
 
     const handleProduct = async (data) => {
 
@@ -130,16 +178,24 @@ const AddProduct = () => {
 
     return (
         <AdminLayout>
-            <div className="container-fluid">
-                <div className="row py-3 justify-content-center">
-                    <div className="col-12">
-                        <form onSubmit={handleSubmit(handleProduct)} action="" className='form-control  px-lg-5 bg-transparent border-0'>
-                            <div className="row   ">
-                                <div className="col-12   py-3 rounded-3 text-center px-0 ">
-                                    <h4 className='fw-bold'>Add New Product</h4>
-                                    <p className='text-secondary small m-0'>Fill in the details below to add a new electronic item to your store.</p>
+            <div className="container-fluid px-4 py-2">
+                <div className="row py-3 px-2 justify-content-center">
+                    <BreadCrumb parent={"Products"} child={"Add  Product"} />
+                    <div className="col-12 p-0">
+                        <form onSubmit={handleSubmit(handleProduct)} action="" className='form-control p-4   bg-white border-0'>
+                            <div className="row mb-3">
+                                <div className="col-12 py-3 rounded-3 ">
+                                    <h4 className="fw-bold">Add New Product</h4>
+                                    <p className="text-secondary small m-0">
+                                        Complete the form below to add a new product to your inventory.
+                                        Select the brand, category, and subcategory to ensure accurate classification.
+                                        Fill in product details to help customers find and understand your items.
+                                    </p>
                                 </div>
                             </div>
+
+
+
                             <div className="row     rounded-3 mb-3">
                                 <div className="col-12">
                                     <div className="mb-3">
@@ -156,7 +212,7 @@ const AddProduct = () => {
                                 <div className="col-xl-4">
                                     <div className="mb-3">
                                         <label className="form-label mb-1">Select Product Brand</label>
-                                        <select onClick={(e) => setBrandID(e.target.value)} className={`form-select ${errors.brand ? "is-invalid" : ""}`}>
+                                        <select {...register("brand", { required: true })} className={`form-select ${errors.brand ? "is-invalid" : ""}`}>
                                             <option value="">Select Brand</option>
                                             {
                                                 brands.map((brand) => (
@@ -170,24 +226,29 @@ const AddProduct = () => {
                                 <div className="col-xl-4">
                                     <div className="mb-3">
                                         <label className="form-label mb-1">Select Product Category</label>
-                                        <select onClick={(e) => setCategoryID(e.target.value)} disabled={category.length === 0} className={`form-select ${errors.category ? "is-invalid" : ""}`}>
+                                        <select
+                                            disabled={!viewCategory}
+                                            className={`form-select ${errors.category ? "is-invalid" : ""}`}
+                                            id="categoryId"
+                                            {...register("category", { required: "Category is required" })}
+                                        >
                                             <option value="">Select Category</option>
-                                            {
-                                                category.map((cat, index) => (
-                                                    <option key={cat._id} value={cat._id}>{cat.category}</option>
-                                                ))
-                                            }
+                                            {categories.map((category) => (
+                                                <option key={category._id} value={category._id}>
+                                                    {category.category}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
                                 <div className="col-xl-4">
                                     <div className="mb-3">
                                         <label className="form-label mb-1">Select Product SubCategory</label>
-                                        <select {...register("subCategory", { required: true })} disabled={categoryID === null} className={`form-select ${errors.category ? "is-invalid" : ""}`}>
+                                        <select {...register("subCategory", { required: true })} disabled={!viewSubCategory} className={`form-select ${errors.subCategory ? "is-invalid" : ""}`}>
                                             <option value="">Select SubCategory</option>
                                             {
                                                 subcategory.map((subcat, index) => (
-                                                    <option key={index} value={subcat}>{subcat}</option>
+                                                    <option key={index} value={subcat._id}>{subcat.subCategory}</option>
                                                 ))
                                             }
                                         </select>
@@ -223,7 +284,11 @@ const AddProduct = () => {
                                 })}
 
                             </div>
-                            <button type='submit' className='form-control shadow-none btn btn-dark'>Submit</button>
+                            <button type='submit' className='form-control shadow-none btn login-btn text-light border-0'>Submit</button>
+                            {/* Footer help text */}
+                            <p className="text-muted text-center mt-2 small">
+                                Need help? <a href="/admin/help" className="text-decoration-none">View the Products guide</a>.
+                            </p>
                         </form>
                     </div>
                 </div>

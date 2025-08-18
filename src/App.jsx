@@ -1,5 +1,5 @@
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
-import "../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js";
+import "../node_modules/bootstrap/dist/js/bootstrap.bundle.js";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AdminDashboard from "./Views/Pages/AdminDashboard.jsx";
@@ -16,6 +16,9 @@ import Unauthorized from "./Views/Pages/Unauthorized.jsx";
 import AddCategory from "./Views/Pages/categories/AddCategory.jsx";
 import AddSubCategory from "./Views/Pages/categories/AddSubCategory.jsx";
 import ManageCatSub from "./Views/Pages/categories/ManageCatSub.jsx";
+import AddAttribute from "./Views/Pages/categories/AddAttribute.jsx";
+
+
 
 function App() {
   useEffect(() => {
@@ -82,6 +85,9 @@ function App() {
           <Route path="/admin/categories/addSubCategory" element={<PrivateRoute>
             <AddSubCategory />
           </PrivateRoute>} />
+
+          <Route path="/admin/categories/addAttribute" element={<PrivateRoute><AddAttribute /></PrivateRoute>} />
+
           <Route
             path="/admin/categories/manage"
             element={

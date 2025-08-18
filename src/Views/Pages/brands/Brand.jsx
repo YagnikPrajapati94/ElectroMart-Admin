@@ -6,6 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Skeleton from "react-loading-skeleton";
 import { speak } from "../../Layout/utils/speak";
+import BreadCrumb from "../../Layout/Component/BreadCrumb";
 
 const Brand = () => {
   const baseURL = import.meta.env.VITE_API_URL;
@@ -81,44 +82,52 @@ const Brand = () => {
   return (
     <AdminLayout>
       <div className="container-fluid p-4">
-        <div className="row mb-4 align-items-center">
-          <div className="col-md-6">
-            <h3 className="fw-semibold text-dark m-0">Brands List</h3>
+        <div className="row mb-4 px-2 align-items-center">
+          <BreadCrumb parent={"Brands"} child={"List"} />
+          <div className="col-12 text-center p-0">
+            <h3 className="fw-semibold text-dark m-0">Brand Directory</h3>
             <small className="text-muted">
-              Manage all brand logos and names here
+              View, search, and manage all registered brand names and logos
             </small>
           </div>
-          <div className="col-md-6 text-md-end mt-3 mt-md-0">
+
+
+        </div>
+
+        <div className="row mb-4">
+          <div className="col-xxl-10 col-md-6 ms-auto">
+            <div className="input-group shadow-sm rounded-3 overflow-hidden">
+              <span className="input-group-text bg-white border-0">
+                <i className="bi bi-search text-muted"></i>
+              </span>
+              <input
+                type="search"
+                className="form-control  border-0 py-2 bg-white"
+                placeholder="Search brand name..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); // reset to first page
+                }}
+              />
+            </div>
+          </div>
+          <div className="col-xxl-2 col-md-6 text-md-end mt-3 mt-md-0">
             <button
               onClick={() => setEditData(null)}
               data-bs-toggle="modal"
               data-bs-target="#exampleModal"
-              className="btn login-btn border-0 text-light px-4 py-2 shadow-sm"
+              className="btn form-control login-btn border-0 text-light px-4 py-2 shadow-sm"
             >
               <i className="bi bi-plus-circle me-2"></i>Add Brand
             </button>
           </div>
         </div>
 
-        <div className="row mb-4">
-          <div className="col-md-12 ms-auto">
-            <input
-              type="search"
-              className="form-control shadow-sm rounded-3 py-3"
-              placeholder="Search brand name..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1); // reset to first page
-              }}
-            />
-          </div>
-        </div>
-
         <div className="row">
           <div className="col-12">
             <div className="table-responsive rounded-3 border shadow-sm">
-              <table className="table table-hover align-middle mb-0 text-nowrap">
+              <table className="brands-table table table-hover align-middle mb-0 text-nowrap">
                 <thead className="table-light">
                   <tr className="align-middle text-uppercase small text-secondary">
                     <th>#</th>

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { speak } from '../../Layout/utils/speak';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import BreadCrumb from '../../Layout/Component/BreadCrumb';
 
 const AddCategory = () => {
     const baseURL = import.meta.env.VITE_API_URL;
@@ -53,6 +54,7 @@ const AddCategory = () => {
 
             // closeBtnRef.current.click();
         } catch (error) {
+            setLoading(false);
             console.error(error);
             toast.error(error.response.data.message);
             speak(error.response.data.message);
@@ -61,35 +63,32 @@ const AddCategory = () => {
         }
     };
 
-
-
-
-
-
-
     return (
         <AdminLayout>
             <div className="container-fluid p-4  ">
                 <div className="row mb-5 px-2  justify-content-center">
-                    <div className="col-lg-12 bg-white py-2 mb-3 rounded-3">
-                        {/* breadcrumbs */}
-                        <nav aria-label="breadcrumb  " >
-                            <ol className="breadcrumb nav  m-0   fw-bold">
-                                <li className="breadcrumb-item "><p className='text-decoration-none m-0 text-black small' href="/admin/dashboard">Dashboard</p></li>
-                                <li className="breadcrumb-item text-secondary small">Categories</li>
-                                <li className="breadcrumb-item active small" aria-current="page">Add Category</li>
-                            </ol>
-                        </nav>
-                    </div>
+                    <BreadCrumb parent={"Categories"} child={"Add Category"} />
                     <div className="col-lg-12 p-0  rounded-2 ">
 
-                        <form className='form-control bg-white border-0 p-4 ' onSubmit={handleSubmit(handleCategorySubmit)}>
+                        <form
+                            className="form-control rounded-2 bg-white border-0 p-4 pb-2"
+                            onSubmit={handleSubmit(handleCategorySubmit)}
+                        >
                             <h4 className="text-start fw-semibold">Add Category</h4>
-                            <p className='text-secondary  small'>Create a new product category for a selected brand.
-                                Each brand can have its own unique set of categories like Mobile, Laptop, or Television.</p>
+                            <p className="text-secondary small mb-4">
+                                Create a new product category for a selected brand. Each brand can have
+                                its own unique set of categories such as Mobile, Laptop, or Television.
+                                This helps organize products better and improves customer navigation.
+                            </p>
+
+                            {/* Select Brand */}
                             <div className="mb-3">
-                                <label className="form-label">Select Brand</label>
-                                <select className={`form-select ${errors.brand ? 'is-invalid' : ''}`}  {...register("brand", { required: "Brand is required" })}>
+                                <label className="form-label fw-medium">Select Brand</label>
+                                <select
+                                    disabled={loading}
+                                    className={`form-select ${errors.brand ? 'is-invalid' : ''}`}
+                                    {...register("brand", { required: "Brand is required" })}
+                                >
                                     <option value="">Select Brand</option>
                                     {brands.map((brand) => (
                                         <option key={brand._id} value={brand._id}>
@@ -97,20 +96,57 @@ const AddCategory = () => {
                                         </option>
                                     ))}
                                 </select>
+                                {errors.brand && (
+                                    <div className="invalid-feedback">{errors.brand.message}</div>
+                                )}
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="categoryName" className="form-label">Category Name</label>
-                                <input type="text" {...register("category", { required: "Category Image is required" })} className={`form-control ${errors.category ? 'is-invalid' : ''}`} placeholder="Category Name" id="categoryName" />
 
+                            {/* Category Name */}
+                            <div className="mb-3">
+                                <label htmlFor="categoryName" className="form-label fw-medium">
+                                    Category Name
+                                </label>
+                                <input
+                                    disabled={loading}
+                                    type="text"
+                                    {...register("category", { required: "Category Name is required" })}
+                                    className={`form-control ${errors.category ? 'is-invalid' : ''}`}
+                                    placeholder="e.g. Smartphones, Laptops"
+                                    id="categoryName"
+                                />
+                                {errors.category && (
+                                    <div className="invalid-feedback">{errors.category.message}</div>
+                                )}
                             </div>
-                            <button type="submit" className="btn btn-dark px-5 py-2 shadow-none">
+
+                            {/* Helpful note before button */}
+                            <div className="alert alert-info small py-2 mb-3">
+                                <i className="bi bi-lightbulb-fill me-1 text-warning"></i>
+                                Tip: Choose the correct brand before adding a category. Once created, it will be listed under that brand.
+                            </div>
+
+                            {/* Submit Button */}
+                            <button
+                                type="submit"
+                                className="btn login-btn border-0 form-control text-light px-5 py-2 shadow-none"
+                            >
                                 {loading ? (
-                                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span
+                                        className="spinner-border spinner-border-sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    ></span>
                                 ) : (
                                     "Add Category"
                                 )}
                             </button>
+
+                            {/* Footer help text */}
+                            <p className="text-muted text-center mt-2 small">
+                                Need help? <a href="/admin/help" className="text-decoration-none">View the category guide</a>.
+                            </p>
                         </form>
+
                     </div>
 
                 </div>

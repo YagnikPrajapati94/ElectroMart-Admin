@@ -61,16 +61,19 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar  navbar-expand-lg border-bāottom border-secondary border-opacity-10  bg-white  ">
+    <nav className="navbar border-bottom  navbar-expand-lg border-bāottom border-secondary border-opacity-10  bg-white  ">
       <div className="container-fluid">
         <button
-          className="navbar-toggler border-0 p-0 shadow-none"
+          className="navbar-toggler z-3 btn border-0 p-0 shadow-none"
+          type="button"
+          data-bs-toggle="offcanvas"
           data-bs-target="#offcanvas"
           aria-controls="offcanvas"
           aria-label="Toggle navigation"
         >
           <i className="bi text-black bi-list fs-1"></i>
         </button>
+
 
         <div className="ms-auto me-3 my-2    login-btn rounded-3 text-light  ">
           <div className="d-flex align-items-center gap-2 px-3 py-1  ">
@@ -142,6 +145,7 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
+
   );
 };
 

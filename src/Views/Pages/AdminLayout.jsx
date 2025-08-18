@@ -9,7 +9,7 @@ const AdminLayout = ({ children }) => {
                 <Navbar />
                 <AdminSidebar />
             </header>
-            <main>
+            <main >
                 {children}
             </main>
             <footer></footer>

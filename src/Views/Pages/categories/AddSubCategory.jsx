@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { speak } from '../../Layout/utils/speak';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import BreadCrumb from '../../Layout/Component/BreadCrumb';
 
 const AddSubCategory = () => {
     const baseURL = import.meta.env.VITE_API_URL;
@@ -95,14 +96,29 @@ const AddSubCategory = () => {
     return (
         <AdminLayout>
             <div className="container-fluid p-4">
-                <div className="row justify-content-center">
-                    <div className="col-lg-12">
-                        <h4 className="text-start fw-semibold">Add Subcategory</h4>
-                        <p className='text-secondary  small'>Add a subcategory under a selected category and brand.</p>
-                        <form onSubmit={handleSubmit(handleSubcategorySubmit)} action="" className='form-control bg-transparent border-0 p-0'>
+                <div className="row justify-content-center px-2">
+                    <BreadCrumb parent={"Categories"} child={"Add Subcategory"} />
+                    <div className="col-lg-12  p-0">
+
+                        <form
+                            onSubmit={handleSubmit(handleSubcategorySubmit)}
+                            className="form-control p-4 pb-2 rounded-2 bg-white border-0"
+                        >
+                            {/* Heading */}
+                            <h4 className="text-start fw-semibold">Add Subcategory</h4>
+                            <p className="text-secondary small mb-4">
+                                Add a subcategory under a selected category and brand.
+                                Subcategories help organize products in detail, improving user navigation and search results.
+                            </p>
+
+                            {/* Select Brand */}
                             <div className="mb-3">
-                                <label className="form-label">Select Brand</label>
-                                <select className={`form-select ${errors.brand ? 'is-invalid' : ''}`} {...register("brand", { required: "Brand is required" })}>
+                                <label className="form-label fw-medium">Select Brand</label>
+                                <select
+                                    disabled={loading}
+                                    className={`form-select ${errors.brand ? "is-invalid" : ""}`}
+                                    {...register("brand", { required: "Brand is required" })}
+                                >
                                     <option value="">Select Brand</option>
                                     {brands.map((brand) => (
                                         <option key={brand._id} value={brand._id}>
@@ -110,10 +126,22 @@ const AddSubCategory = () => {
                                         </option>
                                     ))}
                                 </select>
+                                {errors.brand && (
+                                    <div className="invalid-feedback">{errors.brand.message}</div>
+                                )}
                             </div>
+
+                            {/* Select Category */}
                             <div className="mb-3">
-                                <label htmlFor="subcategoryName" className="form-label">Select Category</label>
-                                <select disabled={!viewCategories} className={`form-select ${errors.category ? 'is-invalid' : ''}`} id="categoryId" {...register("category", { required: "Category is required" })}>
+                                <label htmlFor="categoryId" className="form-label fw-medium">
+                                    Select Category
+                                </label>
+                                <select
+                                    disabled={!viewCategories || loading}
+                                    className={`form-select ${errors.category ? "is-invalid" : ""}`}
+                                    id="categoryId"
+                                    {...register("category", { required: "Category is required" })}
+                                >
                                     <option value="">Select Category</option>
                                     {categories.map((category) => (
                                         <option key={category._id} value={category._id}>
@@ -121,13 +149,60 @@ const AddSubCategory = () => {
                                         </option>
                                     ))}
                                 </select>
+                                {errors.category && (
+                                    <div className="invalid-feedback">{errors.category.message}</div>
+                                )}
                             </div>
+
+                            {/* Subcategory Name */}
                             <div className="mb-3">
-                                <label htmlFor="subcategoryName" className="form-label">Subcategory Name</label>
-                                <input {...register("subCategory", { required: "Subcategory Name is required" })} type="text" className={`form-control ${errors.subCategory ? 'is-invalid' : ''}`} placeholder="Subcategory Name" id="subcategoryName" />
+                                <label htmlFor="subcategoryName" className="form-label fw-medium">
+                                    Subcategory Name
+                                </label>
+                                <input
+                                    disabled={loading}
+                                    {...register("subCategory", { required: "Subcategory Name is required" })}
+                                    type="text"
+                                    className={`form-control ${errors.subCategory ? "is-invalid" : ""}`}
+                                    placeholder="e.g. Gaming Laptops, Smart TVs"
+                                    id="subcategoryName"
+                                />
+                                {errors.subCategory && (
+                                    <div className="invalid-feedback">{errors.subCategory.message}</div>
+                                )}
                             </div>
-                            <button type="submit" className="btn btn-dark form-control shadow-none">Add Subcategory</button>
+
+                            {/* Helpful Tip */}
+                            <div className="alert alert-info small py-2 mb-3">
+                                <i className="bi bi-lightbulb-fill me-1 text-warning"></i>
+                                Tip: Make sure to select the correct brand and category before adding the subcategory. This ensures proper product grouping.
+                            </div>
+
+                            {/* Submit Button */}
+                            <button
+                                type="submit"
+                                className="btn login-btn text-light form-control shadow-none"
+                            >
+                                {loading ? (
+                                    <span
+                                        className="spinner-border spinner-border-sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    ></span>
+                                ) : (
+                                    "Add Subcategory"
+                                )}
+                            </button>
+
+                            {/* Footer Help Link */}
+                            <p className="text-muted text-center mt-2 small">
+                                Need assistance?{" "}
+                                <a href="/admin/help" className="text-decoration-none">
+                                    View subcategory guide
+                                </a>.
+                            </p>
                         </form>
+
                     </div>
                 </div>
             </div>
