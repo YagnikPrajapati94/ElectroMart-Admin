@@ -18,7 +18,7 @@ const PublicRoute = ({ children }) => {
 
   // ✅ Already logged in → redirect to dashboard
   if (isAuthenticated) {
-    return <Navigate to="/admin/dashboard" replace />;
+    return <Navigate to="/admin/dashboard" />;
   }
 
   // ❌ Not logged in → allow login page
