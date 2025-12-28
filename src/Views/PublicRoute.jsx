@@ -1,8 +1,7 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./Context/AuthContext";
 
-const PrivateRoute = ({ children }) => {
+const PublicRoute = ({ children }) => {
   const { isAuthenticated, authChecking } = useAuth();
 
   if (authChecking) {
@@ -17,11 +16,13 @@ const PrivateRoute = ({ children }) => {
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+  // ✅ Already logged in → redirect to dashboard
+  if (isAuthenticated) {
+    return <Navigate to="/admin/dashboard" replace />;
   }
 
+  // ❌ Not logged in → allow login page
   return children;
 };
 
-export default PrivateRoute;
+export default PublicRoute;

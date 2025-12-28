@@ -1,0 +1,15 @@
+.swal2-popup {
+    background-color: var(--navBackground) !important;
+}
+
+.swal2-title {
+    color: var(--primaryText);
+}
+
+.swal2-html-container {
+    color: var(--secondaryText);
+}
+
+/* .swal2-confirm {
+    width: 100px !important;
+} */

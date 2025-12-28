@@ -1,0 +1,7 @@
+.react-loading-skeleton {
+    background-color: var(--background) !important;
+}
+
+.ManageCatSub .react-loading-skeleton {
+    background-color: var(--navBackground) !important;
+}

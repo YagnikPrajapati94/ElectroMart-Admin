@@ -1,12 +1,12 @@
-import React from 'react'
-import AdminLayout from './AdminLayout'
+import React from "react";
+import AdminLayout from "./AdminLayout";
 
 const Unauthorized = () => {
-    return (
-        <AdminLayout>
-            <h2 className='text-center mt-4'>Under Working.... ⚠️</h2>
-        </AdminLayout>
-    )
-}
+  return (
+    <AdminLayout>
+      <h2 className="text-center TitleText mt-4">Under Working.... ⚠️</h2>
+    </AdminLayout>
+  );
+};
 
-export default Unauthorized
+export default Unauthorized;

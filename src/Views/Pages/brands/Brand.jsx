@@ -1,25 +1,23 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../AdminLayout";
-import AddBrandModel from "../../Layout/Component/Models/AddBrandModel";
-import BrandDetailsModel from "../../Layout/Component/Models/BrandDetailsModel";
 import axios from "axios";
-import { toast } from "react-toastify";
 import Skeleton from "react-loading-skeleton";
 import { speak } from "../../Layout/utils/speak";
 import BreadCrumb from "../../Layout/Component/BreadCrumb";
+import Swal from "sweetalert2";
+import BrandService from "../../Services/BrandService";
+import { useNavigate } from "react-router-dom";
 
 const Brand = () => {
   const baseURL = import.meta.env.VITE_API_URL;
-  const token = sessionStorage.getItem("adminToken");
 
   const [brands, setBrands] = useState([]);
-  const [editData, setEditData] = useState(null);
-  const [brandId, setBrandId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const navigation = useNavigate();
 
   const fetchBrands = async () => {
     setLoading(true);
@@ -39,22 +37,30 @@ const Brand = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    setLoading(id);
+    setLoading(true);
     try {
-      speak("Are you sure you want to delete this brand?");
-      const confirmed = window.confirm(
-        "Are you sure you want to delete this brand? ."
-      );
-      if (!confirmed) {
-        speak("Brand deletion cancelled.");
-        return;
-      }
-      await axios.delete(`${baseURL}/api/deleteBrand/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          // Delete the brand
+          const result = await BrandService.deleteBrand(id);
+          if (result.data.success) {
+            Swal.fire("Deleted!", "Your file has been deleted.", "success");
+            speak("Brand deleted successfully");
+            fetchBrands();
+          }
+          console.log(result);
+        } else {
+          // User clicked "Cancel"
+          Swal.fire("Cancelled", "Your brand is safe :)", "info");
+          speak("Brand deletion cancelled");
+        }
       });
-      toast.success("Brand deleted successfully");
-      speak("Brand deleted successfully");
-      fetchBrands();
     } catch (error) {
       console.log(error);
     } finally {
@@ -62,12 +68,8 @@ const Brand = () => {
     }
   };
 
-  const handleEdit = (data) => {
-    setEditData(data);
-  };
-
-  const handleView = (id) => {
-    setBrandId(id);
+  const handleEdit = (id) => {
+    navigation(`/admin/brands/add/${id}`);
   };
 
   const filteredBrands = brands.filter((brand) =>
@@ -85,24 +87,22 @@ const Brand = () => {
         <div className="row mb-4 px-2 align-items-center">
           <BreadCrumb parent={"Brands"} child={"List"} />
           <div className="col-12 text-center p-0">
-            <h3 className="fw-semibold text-dark m-0">Brand Directory</h3>
-            <small className="text-muted">
+            <h3 className="fw-semibold TitleText m-0">Brand Directory</h3>
+            <small className="SubtitleText">
               View, search, and manage all registered brand names and logos
             </small>
           </div>
-
-
         </div>
 
         <div className="row mb-4">
-          <div className="col-xxl-10 col-md-6 ms-auto">
+          <div className="col-12 ms-auto">
             <div className="input-group shadow-sm rounded-3 overflow-hidden">
-              <span className="input-group-text bg-white border-0">
+              <span className="input-group-text searchIcon bg-white border-0">
                 <i className="bi bi-search text-muted"></i>
               </span>
               <input
                 type="search"
-                className="form-control  border-0 py-2 bg-white"
+                className="form-control searchBar border-0 py-2 bg-white"
                 placeholder="Search brand name..."
                 value={searchTerm}
                 onChange={(e) => {
@@ -112,21 +112,11 @@ const Brand = () => {
               />
             </div>
           </div>
-          <div className="col-xxl-2 col-md-6 text-md-end mt-3 mt-md-0">
-            <button
-              onClick={() => setEditData(null)}
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              className="btn form-control login-btn border-0 text-light px-4 py-2 shadow-sm"
-            >
-              <i className="bi bi-plus-circle me-2"></i>Add Brand
-            </button>
-          </div>
         </div>
 
         <div className="row">
           <div className="col-12">
-            <div className="table-responsive rounded-3 border shadow-sm">
+            <div className="table-responsive rounded-3 shadow-sm">
               <table className="brands-table table table-hover align-middle mb-0 text-nowrap">
                 <thead className="table-light">
                   <tr className="align-middle text-uppercase small text-secondary">
@@ -187,11 +177,8 @@ const Brand = () => {
                           </span>
                         </td>
                         <td className="text-end ">
-
                           <button
-                            data-bs-toggle="modal"
-                            data-bs-target="#exampleModal"
-                            onClick={(e) => handleEdit(brand)}
+                            onClick={(e) => handleEdit(brand._id)}
                             className="btn text-primary p-0 mx-2 "
                           >
                             <i className="bi bi-pencil-fill"></i>
@@ -238,7 +225,7 @@ const Brand = () => {
                 >
                   Previous
                 </button>
-                <span className="text-muted small">
+                <span className="SubtitleText small">
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
@@ -254,10 +241,6 @@ const Brand = () => {
             )}
           </div>
         </div>
-
-        {/* Modals */}
-        <AddBrandModel editData={editData} fetchBrands={fetchBrands} />
-        <BrandDetailsModel brandId={brandId} />
       </div>
     </AdminLayout>
   );

@@ -1,14 +1,16 @@
+import AdminLayout from "../AdminLayout";
+import BreadCrumb from "../../Layout/Component/BreadCrumb";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useEffect } from "react";
 import { useRef } from "react";
-import { speak } from "../../utils/speak";
+import { speak } from "../../Layout/utils/speak";
+import BrandService from "../../Services/BrandService";
+import { useNavigate, useParams } from "react-router-dom";
 
-const baseURL = import.meta.env.VITE_API_URL;
-
-const AddBrandModel = ({ fetchBrands, editData }) => {
+const AddBrand = () => {
   const {
     register,
     handleSubmit,
@@ -18,9 +20,8 @@ const AddBrandModel = ({ fetchBrands, editData }) => {
   } = useForm();
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const token = sessionStorage.getItem("adminToken");
-
-  const closeBtnRef = useRef();
+  const { editId } = useParams();
+  const navigation = useNavigate();
 
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -31,13 +32,6 @@ const AddBrandModel = ({ fetchBrands, editData }) => {
     });
   };
 
-  useEffect(() => {
-    if (editData) {
-      setValue("brandName", editData.brandName);
-      setPreview(editData.brandLogo);
-    }
-  }, [editData, setValue]);
-
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -47,43 +41,53 @@ const AddBrandModel = ({ fetchBrands, editData }) => {
     }
   };
 
+  const fetchBrandById = async (editId) => {
+    try {
+      const result = await BrandService.getBrandById(editId);
+      if (result.data.success) {
+        const data = result.data.brand;
+        setValue("brandName", data.brandName);
+        setValue("brandLogo", data.brandLogo);
+        setPreview(data.brandLogo);
+      }
+    } catch (error) {
+      console.error("Error fetching brand by ID:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (editId) {
+      fetchBrandById(editId);
+    }
+  }, [editId]);
+
   const handleFormSubmit = async (data) => {
     setLoading(true);
     try {
-      if (editData) {
-        const res = await axios.put(
-          `${baseURL}/api/updateBrand/${editData._id}`,
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        speak("Brand updated successfully");
-        toast.success("Brand updated successfully");
-        reset();
-        setPreview(null);
-        fetchBrands?.();
+      if (editId) {
+        console.log("Updated", data);
+        const res = await BrandService.updateBrand(editId, data);
+        if (res.data.success) {
+          speak("Brand updated successfully");
+          toast.success("Brand updated successfully");
+          reset();
+          setPreview(null);
+          navigation("/admin/brands/manage");
+        }
       } else {
-        const res = await axios.post(`${baseURL}/api/addBrand`, data, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        speak("Brand added successfully");
-        toast.success("Brand added successfully");
-        reset();
-        setPreview(null);
-        fetchBrands?.(); // Call parent function
+        const res = await BrandService.addBrand(data);
+        if (res.data.success) {
+          speak("Brand added successfully");
+          toast.success("Brand added successfully");
+          reset();
+          setPreview(null);
+        }
       }
-      // bootstrap.Modal.getOrCreateInstance(document.getElementById('exampleModal')).hide();
     } catch (error) {
       toast.error("Failed to add brand");
-      console.error("Error while adding brand:", error);
+      console.error("Error while adding brand:", error.response);
     } finally {
       setLoading(false);
-      closeBtnRef.current.click(); // This will close the modal
     }
   };
 
@@ -91,36 +95,25 @@ const AddBrandModel = ({ fetchBrands, editData }) => {
     setPreview(null);
     reset();
   };
-
   return (
-    <div
-      className="modal fade"
-      id="exampleModal"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content bg-black text-light">
-          <div className="modal-header">
-            <h1 className="modal-title fs-5" id="exampleModalLabel">
-              {editData ? "Update" : "Add"} Brand
-            </h1>
-            <button
-              ref={closeBtnRef}
-              onClick={() => removePreview()}
-              type="button"
-              className="shadow-none btn ms-auto"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            >
-              <i className="bi bi-x-lg TitleText"></i>
-            </button>
-          </div>
-          <div className="modal-body rounded-3 ">
+    <AdminLayout>
+      <div className="container-fluid p-4">
+        <div className="row px-2">
+          <BreadCrumb parent={"Brands"} child={"Add Brand"} />
+          <div className="col-12 p-0">
             <form
               onSubmit={handleSubmit(handleFormSubmit)}
-              className="form-control bg-transparent text-light border-0 d-grid gap-2"
+              className="form-control p-4 rounded-2 text-light d-grid "
             >
+              <div className="">
+                <h4 className="text-start TitleText fw-semibold">Add Brand</h4>
+                <p className="SubtitleText small m-0">
+                  Add a new brand to your store
+                </p>
+              </div>
+              <div className="divider">
+                <hr className="w-100" />
+              </div>
               {/* Brand Name */}
               <div className="mb-3">
                 <label className="form-label">Brand Name</label>
@@ -146,7 +139,6 @@ const AddBrandModel = ({ fetchBrands, editData }) => {
                 <label className="form-label">Brand Logo</label>
                 <input
                   type="file"
-                  
                   className={`form-control ${
                     errors.brandLogo ? "is-invalid" : ""
                   }`}
@@ -177,9 +169,9 @@ const AddBrandModel = ({ fetchBrands, editData }) => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className={`btn shadow-none ${
-                  editData ? "btn-warning" : "btn-primary"
-                } ${loading ? "disabled" : ""} form-control`}
+                className={`btn shadow-none login-btn text-white mt-2 border-0 ${
+                  loading ? "disabled" : ""
+                } form-control`}
               >
                 {loading ? (
                   <span
@@ -188,15 +180,15 @@ const AddBrandModel = ({ fetchBrands, editData }) => {
                     aria-hidden="true"
                   ></span>
                 ) : (
-                  `${editData ? "Update" : "Add"}`
+                  `${editId ? "Update" : "Add"} Brand`
                 )}
               </button>
             </form>
           </div>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 
-export default AddBrandModel;
+export default AddBrand;

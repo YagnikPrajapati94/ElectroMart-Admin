@@ -28,7 +28,7 @@ const AdminSidebar = () => {
         { label: "Add Category", path: "/admin/categories/addCategory" },
         { label: "Add Subcategory", path: "/admin/categories/addSubCategory" },
         { label: "Add Attribute", path: "/admin/categories/addAttribute" },
-        { label: "Manage Attributes", path: "/admin/categories/manageAttributes" },
+        { label: "Manage Attributes", path: "/admin/categories/Attributes" },
         {
           label: "Manage Categories & Subcategories",
           path: "/admin/categories/manage",
@@ -38,7 +38,10 @@ const AdminSidebar = () => {
     {
       label: "Brands",
       icon: "bi-tags-fill",
-      path: "/admin/brands",
+      children: [
+        { label: "Add Brand", path: "/admin/brands/add" },
+        { label: "Manage Brands", path: "/admin/brands/manage" },
+      ],
     },
     {
       label: "Orders",
@@ -102,22 +105,25 @@ const AdminSidebar = () => {
         </Link>
         <button
           type="button"
-          className="btn-close pe-4   shadow-none d-lg-none d-block"
+          className=" TitleText btn p-0   shadow-none d-lg-none d-block"
           data-bs-dismiss="offcanvas"
           aria-label="Close"
-        />
+        >
+          <i className="bi bi-x-lg fs-3"></i>
+        </button>
       </div>
       <div className="offcanvas-body   px-0     sidebar-scroll ">
         <ul className="list-unstyled   gap-3 navbar-nav">
           {menuItems.map((item, index) => (
-            <li key={index} className="">
+            <li key={index} className="sidebar-menu-item">
               {item.children ? (
                 <>
                   <a
-                    className={`d-flex px-4 child-color box-hover  justify-content-between align-items-center text-decoration-none px-2 py-1 ${item.children.some((child) => isActive(child.path))
+                    className={`d-flex px-4 child-color box-hover  justify-content-between align-items-center text-decoration-none px-2 py-1 ${
+                      item.children.some((child) => isActive(child.path))
                         ? "active  "
                         : "non-active"
-                      }`}
+                    }`}
                     data-bs-toggle="collapse"
                     href={`#submenu${index}`}
                     role="button"
@@ -146,29 +152,22 @@ const AdminSidebar = () => {
                           : "non-active"
                       }
                     />
-                    {/* <i
-                      className={`bi bi-caret-down-fill small ${
-                        item.children.some((child) => isActive(child.path))
-                          ? ""
-                          : "non-active"
-                      }} `}
-                    ></i> */}
                   </a>
                   <ul
-                    className={`collapse   collapse-list ps-5 ${item.children.some((child) => isActive(child.path))
+                    className={`collapse SubtitleText   collapse-list ps-5 ${
+                      item.children.some((child) => isActive(child.path))
                         ? "show"
                         : ""
-                      }`}
+                    }`}
                     id={`submenu${index}`}
                   >
                     {item.children.map((sub, subIndex) => (
                       <li key={subIndex}>
                         <Link
                           to={sub.path}
-                          className={`text-decoration-none small   d-block py-2 px-2 rounded ${isActive(sub.path)
-                              ? "child-active"
-                              : "text-secondary"
-                            }`}
+                          className={`text-decoration-none small   d-block py-2 px-2 rounded ${
+                            isActive(sub.path) ? "child-active" : "SubtitleText"
+                          }`}
                         >
                           {sub.label}
                         </Link>
@@ -179,17 +178,11 @@ const AdminSidebar = () => {
               ) : (
                 <Link
                   to={item.path}
-                  className={`d-flex box-hover   px-4 align-items-center px-2 py-1 text-decoration-none rounded ${isActive(item.path) ? "active " : "non-active"
-                    }`}
+                  className={`d-flex    px-4 align-items-center px-2 py-1 text-decoration-none rounded ${
+                    isActive(item.path) ? "active " : "non-active"
+                  }`}
                 >
-                  <i
-                    className={`bi ${item.icon} me-2`}
-                  // style={{
-                  //   color: isActive(item.path)
-                  //     ? "rgb(104, 97, 206)"
-                  //     : undefined,
-                  // }}
-                  ></i>
+                  <i className={`bi ${item.icon} me-2`}></i>
                   {item.label}
                 </Link>
               )}

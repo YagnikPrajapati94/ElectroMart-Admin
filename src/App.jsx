@@ -1,6 +1,8 @@
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "../node_modules/bootstrap/dist/js/bootstrap.bundle.js";
 import "./App.css";
+import "./Views/css/Swal.css";
+import "./Views/css/skeleton.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AdminDashboard from "./Views/Pages/AdminDashboard.jsx";
 import Login from "./Views/Pages/Auth/Login.jsx";
@@ -17,8 +19,8 @@ import AddCategory from "./Views/Pages/categories/AddCategory.jsx";
 import AddSubCategory from "./Views/Pages/categories/AddSubCategory.jsx";
 import ManageCatSub from "./Views/Pages/categories/ManageCatSub.jsx";
 import AddAttribute from "./Views/Pages/categories/AddAttribute.jsx";
-
-
+import PublicRoute from "./Views/PublicRoute.jsx";
+import AddBrand from "./Views/Pages/brands/AddBrand.jsx";
 
 function App() {
   useEffect(() => {
@@ -43,7 +45,14 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
           <Route
             path="/admin/dashboard"
             element={
@@ -54,27 +63,43 @@ function App() {
           />
 
           {/* Products routes  */}
-          <Route
+          {/* <Route
             path="/admin/products/add"
             element={
               <PrivateRoute>
                 <AddProduct />
               </PrivateRoute>
             }
-          />
+          /> */}
 
           {/* brands routes  */}
           <Route
-            path="/admin/brands"
+            path="/admin/brands/Manage"
             element={
               <PrivateRoute>
                 <Brand />
               </PrivateRoute>
             }
           />
+          <Route
+            path="/admin/brands/add"
+            element={
+              <PrivateRoute>
+                <AddBrand />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/brands/add/:editId"
+            element={
+              <PrivateRoute>
+                <AddBrand />
+              </PrivateRoute>
+            }
+          />
 
           {/* categories routes */}
-          <Route
+          {/* <Route
             path="/admin/categories/addCategory"
             element={
               <PrivateRoute>
@@ -82,11 +107,23 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/admin/categories/addSubCategory" element={<PrivateRoute>
-            <AddSubCategory />
-          </PrivateRoute>} />
+          <Route
+            path="/admin/categories/addSubCategory"
+            element={
+              <PrivateRoute>
+                <AddSubCategory />
+              </PrivateRoute>
+            }
+          />
 
-          <Route path="/admin/categories/addAttribute" element={<PrivateRoute><AddAttribute /></PrivateRoute>} />
+          <Route
+            path="/admin/categories/addAttribute"
+            element={
+              <PrivateRoute>
+                <AddAttribute />
+              </PrivateRoute>
+            }
+          />
 
           <Route
             path="/admin/categories/manage"
@@ -95,7 +132,7 @@ function App() {
                 <ManageCatSub />
               </PrivateRoute>
             }
-          />
+          /> */}
 
           <Route path="*" element={<Unauthorized />} />
         </Routes>

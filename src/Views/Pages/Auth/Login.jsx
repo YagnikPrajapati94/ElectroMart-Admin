@@ -4,17 +4,25 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import axios from "axios";
 import { speak } from "../../Layout/utils/speak";
+import { Regex } from "../../Constants/Regex";
+import { Errors } from "../../Constants/Errors";
+import AuthSerivce from "../../Services/AuthService";
+import { useAuth } from "../../Context/AuthContext";
 
 export default function Login() {
   const apiUrl = import.meta.env.VITE_API_URL;
   const [loading, setLoading] = useState(false);
+  const { setIsAuthenticated, getMe } = useAuth();
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    mode: "onChange",
+  });
 
   const navigate = useNavigate();
 
@@ -22,36 +30,19 @@ export default function Login() {
     setLoading(true);
     try {
       // Call your backend login API
-      const response = await axios.post(`${apiUrl}/api/login`, data);
-
-      // if (!response.ok) {
-      //     const err = await response.json();
-      //     throw new Error(err.message || "Login failed");
-      // }
-
-      // console.log(response);
+      const response = await AuthSerivce.adminLogin(data);
       const result = response.data;
-
-      // Example response: { token: "...jwt...", user: { role: "admin", email: "..."} }
-
-      // Save token to sessionStorage
-      sessionStorage.setItem("adminToken", result.token);
-
-      // Check role from response
-      if (result.data.role === "admin") {
+      console.log(result);
+      if (result.success) {
+        setIsAuthenticated(true);
         speak("Login successful");
         toast.success("Login successful");
-
-        reset();
         navigate("/admin/dashboard");
-      } else {
-        toast.error("Access denied. You are not an admin.");
-        speak("Access denied. You are not an admin.");
+        getMe();
       }
     } catch (error) {
-      speak("Login failed. Please try again.");
-      toast.error("Login failed. Please try again.");
-
+      speak(error.response.data.message);
+      toast.error(error.response.data.message);
       console.log("Login error:", error);
     } finally {
       setLoading(false);
@@ -65,7 +56,7 @@ export default function Login() {
         <div className="col-xl-4 col-lg-8 mx-auto p-0 align-content-center">
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="rounded-5 mx-auto p-md-5 p-3"
+            className="rounded-5 mx-auto bg-transparent border-0 p-md-5 p-3"
             data-aos="fade-up"
             data-aos-delay="100"
             data-aos-duration="800"
@@ -85,7 +76,7 @@ export default function Login() {
             </div>
 
             <p
-              className="text-muted text-center mb-3 fs-6"
+              className="SubtitleText text-center mb-3 fs-6"
               data-aos="fade-up"
               data-aos-delay="300"
               data-aos-duration="600"
@@ -105,11 +96,22 @@ export default function Login() {
                 disabled={loading}
                 type="email"
                 id="adminEmail"
-                className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                placeholder="admin@example.com"
-                {...register("email", { required: "Email is required" })}
+                autoComplete="off"
+                placeholder=""
+                {...register("email", {
+                  required: Errors.required,
+                  pattern: {
+                    value: Regex.email,
+                    message: Errors.invalidEmail,
+                  },
+                })}
+                className={`form-control text-lowercase shadow-none  textFloatingInput ${
+                  errors.email ? "is-invalid" : watch("email") ? "is-valid" : ""
+                }`}
               />
-              <label htmlFor="adminEmail">Work Email Address</label>
+              <label className="SubtitleText" htmlFor="adminEmail">
+                Work Email Address
+              </label>
               {errors.email && (
                 <div className="invalid-feedback">{errors.email.message}</div>
               )}
@@ -126,13 +128,25 @@ export default function Login() {
                 disabled={loading}
                 type="password"
                 id="adminPassword"
-                className={`form-control ${
-                  errors.password ? "is-invalid" : ""
+                className={`form-control border shadow-none textFloatingInput ${
+                  errors.password
+                    ? "is-invalid "
+                    : watch("password")
+                    ? "is-valid"
+                    : ""
                 }`}
-                placeholder="••••••••"
-                {...register("password", { required: "Password is required" })}
+                placeholder=""
+                {...register("password", {
+                  required: Errors.required,
+                  pattern: {
+                    value: Regex.password,
+                    message: Errors.invalidPassword,
+                  },
+                })}
               />
-              <label htmlFor="adminPassword">Secure Password</label>
+              <label htmlFor="adminPassword" className="SubtitleText">
+                Secure Password
+              </label>
               {errors.password && (
                 <div className="invalid-feedback">
                   {errors.password.message}
@@ -168,7 +182,7 @@ export default function Login() {
 
             {/* Footer */}
             <p
-              className="text-center text-muted mt-3 fs-6"
+              className="text-center SubtitleText mt-3 fs-6"
               data-aos="fade-up"
               data-aos-delay="800"
               data-aos-duration="600"
