@@ -141,7 +141,14 @@ function App() {
             }
           /> */}
 
-          <Route path="*" element={<Unauthorized />} />
+          <Route
+            path="*"
+            element={
+              <PrivateRoute>
+                <Unauthorized />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </Router>
     </>

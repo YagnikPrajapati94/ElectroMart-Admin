@@ -54,10 +54,13 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       const response = await AuthSerivce.logout();
-      setIsAuthenticated(false);
-      navigate("/login");
-      speak("Logged out successfully");
-      toast.success(response.data.message);
+      console.log(response);
+      if (response.data.success) {
+        setIsAuthenticated(false);
+        navigate("/login");
+        speak("Logged out successfully");
+        toast.success(response.data.message);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -158,9 +161,12 @@ const Navbar = () => {
                   alt=""
                 />
                 <div className="">
-                  <h6 className="fw-bold TitleText mb-0">
-                    {user?.firstName} {user?.lastName}
-                  </h6>
+                  {user && (
+                    <h6 className="fw-bold TitleText mb-0">
+                      {user.firstName} {user.lastName}
+                    </h6>
+                  )}
+
                   <p className="fw-light SubtitleText mb-0 mt-1 ">Admin</p>
                 </div>
               </li>
