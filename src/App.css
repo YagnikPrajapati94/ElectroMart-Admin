@@ -80,6 +80,29 @@ body {
   text-align: center;
 }
 
+.preview-wrapper {
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.preview-image img {
+  height: 80px;
+  width: 80px;
+  object-fit: contain;
+}
+
+.preview-actions button {
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.preview-actions button:hover {
+  opacity: 0.8;
+}
+
+
+
 .spinner {
   width: 80px;
   height: 80px;
@@ -160,6 +183,10 @@ form {
   /* transition: all 0.4s ease-in-out !important; */
 }
 
+.filterSelect {
+  background-color: var(--navBackground) !important;
+}
+
 
 
 .accordion-button {
@@ -167,6 +194,53 @@ form {
   /* transition: all 0.4s ease-in-out !important; */
 
   /* border: 1px solid var(--border) !important; */
+}
+
+.dashboard-card {
+  border-radius: 14px;
+  transition: all 0.25s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: #fff;
+}
+
+/* Soft enterprise gradient backgrounds */
+.bg-primary {
+  background: linear-gradient(135deg, #4e73df, #224abe);
+}
+
+.bg-success {
+  background: linear-gradient(135deg, #1cc88a, #13855c);
+}
+
+.bg-warning {
+  background: linear-gradient(135deg, #f6c23e, #dda20a);
+}
+
+.bg-danger {
+  background: linear-gradient(135deg, #e74a3b, #be2617);
+}
+
+.dashboard-link {
+  font-size: 0.85rem;
+  color: #4e73df;
+}
+
+.dashboard-link:hover {
+  color: #224abe;
 }
 
 
@@ -388,19 +462,69 @@ nav {
   /* background-color: white !important; */
 }
 
+.non-active {
+  color: var(--secondaryText) !important;
+  transition: none !important;
+}
+
+.non-active i {
+  transition: none !important;
+}
 
 .active {
-  /* background-color: hsla(225, 20%, 96%, 0.63) !important; */
-  /* background: linear-gradient(90deg, #ff6cac13, #7366ff15) !important; */
-  border-radius: 0px !important;
-  /* color: aqua !important; */
+  border-radius: 10px !important;
   color: var(--labelText) !important;
-  /* background-color: rgba(121, 113, 238, 0.103); */
-  /* font-weight: 900 !important; */
-
-  /* transform: scale(1.2); */
-  /* color: linear-gradient(90deg, #ff6cac, #7366ff) !important; */
   position: relative;
+}
+
+.box-hover {
+  border-radius: 10px !important;
+}
+
+.offcanvas .active {
+  background: linear-gradient(90deg, #ff6cac, #7366ff) !important;
+  border-radius: 10px !important;
+  color: white !important;
+  position: relative;
+}
+
+.offcanvas .box-hover:focus .non-active {
+  color: white !important;
+}
+
+.offcanvas .box-hover:hover .non-active {
+  color: white !important;
+}
+
+
+.offcanvas .box-hover:focus {
+  background: linear-gradient(90deg, #ff6cac, #7366ff) !important;
+  color: white !important;
+  border-radius: 10px !important;
+}
+
+.offcanvas .box-hover:hover {
+  background: linear-gradient(90deg, #ff6cac, #7366ff) !important;
+  color: white !important;
+  border-radius: 10px !important;
+}
+
+.child-active {
+  background: linear-gradient(90deg, #ff6cac, #7366ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* For Firefox */
+  background-clip: text;
+  color: transparent;
+
+  font-weight: 600;
+  /* optional – looks better */
+}
+
+.child-active::marker {
+  color: #ff6cac !important;
+  /* solid color */
 }
 
 li {
@@ -417,17 +541,12 @@ li {
   height: 100%;
   background-color: rgb(104, 97, 206) !important;
 } */
-.box-hover {
-  /* transition: all 0.3s ease-in-out !important; */
-  position: relative;
-}
 
 
 
 
-.non-active {
-  color: var(--secondaryText) !important;
-}
+
+
 
 .breadcrumb-container {
   background-color: var(--navBackground) !important;
@@ -444,12 +563,6 @@ li {
 }
 
 
-
-
-.child-active {
-  color: var(--labelText) !important;
-  /* color: purple; */
-}
 
 
 .accordion-collapse,

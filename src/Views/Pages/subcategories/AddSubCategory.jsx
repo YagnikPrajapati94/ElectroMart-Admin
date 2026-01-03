@@ -5,10 +5,11 @@ import { speak } from "../../Layout/utils/speak";
 import axios from "axios";
 import { toast } from "react-toastify";
 import BreadCrumb from "../../Layout/Component/BreadCrumb";
+import CategoryService from "../../Services/CategoryService";
+import SubCategoryService from "../../Services/SubCategoryService";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AddSubCategory = () => {
-  const baseURL = import.meta.env.VITE_API_URL;
-  const token = sessionStorage.getItem("adminToken");
   const {
     register,
     handleSubmit,
@@ -16,75 +17,46 @@ const AddSubCategory = () => {
     reset,
     setValue,
     watch,
-  } = useForm();
-  const [brands, setBrands] = useState([]);
+  } = useForm({
+    mode: "onChange",
+  });
   const [categories, setCategories] = useState([]);
-  // const [brandId, setBrandId] = useState('');
   const [loading, setLoading] = useState(false);
-  const [viewCategories, setViewCategories] = useState(false);
-
-  const brandId = watch("brand");
-
-  // Fetch Brand Function
-  const fetchBrands = async () => {
-    try {
-      const response = await axios.get(`${baseURL}/api/getBrands`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log(response.data.brands);
-      const data = response.data.brands;
-      setBrands(data);
-    } catch (error) {
-      console.error("Failed to fetch brands:", error);
-      return [];
-    }
-  };
-
-  useEffect(() => {
-    fetchBrands();
-  }, []);
+  const { editId } = useParams();
+  const navigation = useNavigate();
 
   // Fetch Catergory by Brand
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(
-        `${baseURL}/api/getCategoriesByBrand/${brandId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      // console.log(response);
-
-      console.log(response.data.categories);
-      setViewCategories(true);
-      toast.success("Categories Founded Successfully");
-      speak("Categories Founded Successfully");
-      // const data = response.data.result;
-      setCategories(response.data.categories);
+      const result = await CategoryService.getCategoriesDropdown();
+      setCategories(result.data.categories);
     } catch (error) {
       console.error("Failed to fetch categories:", error);
-      toast.error(error.response.data.message);
-      speak(error.response.data.message);
-      setViewCategories(false);
     }
   };
   useEffect(() => {
-    if (brandId) {
-      fetchCategories();
-    }
-  }, [brandId]);
+    fetchCategories();
+  }, []);
 
   const handleSubcategorySubmit = async (data) => {
     setLoading(true);
     try {
-      console.log("Subcategory data:", data);
-
-      const response = await axios.post(`${baseURL}/api/addSubCategory`, data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      speak("Subcategory added successfully");
-      toast.success("Subcategory added successfully");
-      reset();
+      if (editId) {
+        const res = await SubCategoryService.updateSubCategory(editId, data);
+        if (res.data.success) {
+          speak("Subcategory updated successfully");
+          toast.success("Subcategory updated successfully");
+          reset();
+          navigation("/admin/subcategories/manage");
+        }
+      } else {
+        const result = await SubCategoryService.addSubCategory(data);
+        if (result.data.success) {
+          speak("Subcategory added successfully");
+          toast.success("Subcategory added successfully");
+          reset();
+        }
+      }
     } catch (error) {
       console.error(error);
       toast.error(error.response.data.message);
@@ -93,12 +65,30 @@ const AddSubCategory = () => {
       setLoading(false);
     }
   };
+  const fetchCategoryById = async (editId) => {
+    try {
+      const result = await SubCategoryService.getSubCategoryById(editId);
+      if (result.data.success) {
+        const data = result.data.subCategory;
+        setValue("categoryId", data.categoryId);
+        setValue("subCategoryName", data.subCategoryName);
+      }
+    } catch (error) {
+      console.error("Error fetching Category by ID:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (editId) {
+      fetchCategoryById(editId);
+    }
+  }, [editId]);
 
   return (
     <AdminLayout>
       <div className="container-fluid p-4">
         <div className="row justify-content-center px-2">
-          <BreadCrumb parent={"Categories"} child={"Add Subcategory"} />
+          <BreadCrumb parent={"Sub Categories"} child={"Add Subcategory"} />
           <div className="col-lg-12  p-0">
             <form
               onSubmit={handleSubmit(handleSubcategorySubmit)}
@@ -109,32 +99,12 @@ const AddSubCategory = () => {
                 Add Subcategory
               </h4>
               <p className="SubtitleText text-start small mb-4">
-                Add a subcategory under a selected category and brand.
-                Subcategories help organize products in detail, improving user
-                navigation and search results.
+                Add a subcategory under a selected category. Subcategories help
+                organize products in detail, improving user navigation and
+                search results.
               </p>
               <div className="divider">
                 <hr className="w-100" />
-              </div>
-
-              {/* Select Brand */}
-              <div className="mb-3">
-                <label className="form-label fw-medium">Select Brand</label>
-                <select
-                  disabled={loading}
-                  className={`form-select ${errors.brand ? "is-invalid" : ""}`}
-                  {...register("brand", { required: "Brand is required" })}
-                >
-                  <option value="">Select Brand</option>
-                  {brands.map((brand) => (
-                    <option key={brand._id} value={brand._id}>
-                      {brand.brandName}
-                    </option>
-                  ))}
-                </select>
-                {errors.brand && (
-                  <div className="invalid-feedback">{errors.brand.message}</div>
-                )}
               </div>
 
               {/* Select Category */}
@@ -143,25 +113,25 @@ const AddSubCategory = () => {
                   Select Category
                 </label>
                 <select
-                  disabled={!viewCategories || loading}
+                  disabled={loading}
                   className={`form-select ${
-                    errors.category ? "is-invalid" : ""
+                    errors.categoryId ? "is-invalid" : ""
                   }`}
                   id="categoryId"
-                  {...register("category", {
+                  {...register("categoryId", {
                     required: "Category is required",
                   })}
                 >
                   <option value="">Select Category</option>
                   {categories.map((category) => (
                     <option key={category._id} value={category._id}>
-                      {category.category}
+                      {category.categoryName}
                     </option>
                   ))}
                 </select>
-                {errors.category && (
+                {errors.categoryId && (
                   <div className="invalid-feedback">
-                    {errors.category.message}
+                    {errors.categoryId.message}
                   </div>
                 )}
               </div>
@@ -176,19 +146,29 @@ const AddSubCategory = () => {
                 </label>
                 <input
                   disabled={loading}
-                  {...register("subCategory", {
+                  autoComplete="off"
+                  maxLength={50}
+                  {...register("subCategoryName", {
                     required: "Subcategory Name is required",
+                    minLength: {
+                      value: 2,
+                      message: "Subcategory Name must be at least 2 characters",
+                    },
+                    maxLength: {
+                      value: 50,
+                      message: "Subcategory Name must be at most 50 characters",
+                    },
                   })}
                   type="text"
                   className={`form-control ${
-                    errors.subCategory ? "is-invalid" : ""
+                    errors.subCategoryName ? "is-invalid" : ""
                   }`}
                   placeholder="e.g. Gaming Laptops, Smart TVs"
                   id="subcategoryName"
                 />
-                {errors.subCategory && (
+                {errors.subCategoryName && (
                   <div className="invalid-feedback">
-                    {errors.subCategory.message}
+                    {errors.subCategoryName.message}
                   </div>
                 )}
               </div>
@@ -212,7 +192,7 @@ const AddSubCategory = () => {
                     aria-hidden="true"
                   ></span>
                 ) : (
-                  "Add Subcategory"
+                  `${editId ? "Update" : "Add"} Subcategory`
                 )}
               </button>
 

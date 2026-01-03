@@ -5,6 +5,9 @@ import { speak } from "../../Layout/utils/speak";
 import axios from "axios";
 import { toast } from "react-toastify";
 import BreadCrumb from "../../Layout/Component/BreadCrumb";
+import { useRef } from "react";
+import CategoryService from "../../Services/CategoryService";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AddCategory = () => {
   const baseURL = import.meta.env.VITE_API_URL;
@@ -16,56 +19,87 @@ const AddCategory = () => {
     reset,
     setValue,
     watch,
-  } = useForm();
-  const [brands, setBrands] = useState([]);
-  const [categories, setCategories] = useState([]);
-  // const [brandId, setBrandId] = useState('');
+  } = useForm({
+    mode: "onChange",
+  });
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  const brandId = watch("brand");
-
-  // Fetch Brand Function
-  const fetchBrands = async () => {
-    try {
-      const response = await axios.get(`${baseURL}/api/getBrands`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log(response.data.brands);
-      const data = response.data.brands;
-      setBrands(data);
-    } catch (error) {
-      console.error("Failed to fetch brands:", error);
-      return [];
-    }
-  };
-
-  useEffect(() => {
-    fetchBrands();
-  }, []);
+  const fileRef = useRef(null);
+  const { editId } = useParams();
+  const navigation = useNavigate();
 
   // Fetch Catergory by Brand
 
   const handleCategorySubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await axios.post(`${baseURL}/api/addCategory`, data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      speak("Category added successfully");
-      toast.success("Category added successfully");
-      reset();
-      // fetchCategories?.();
-
-      // closeBtnRef.current.click();
+      if (editId) {
+        const res = await CategoryService.updateCategory(editId, data);
+        if (res.data.success) {
+          speak("Category updated successfully");
+          toast.success("Category updated successfully");
+          reset();
+          setPreview(null);
+          navigation("/admin/categories/manage");
+        }
+      } else {
+        const result = await CategoryService.addCategory(data);
+        console.log(result);
+        if (result.data.success) {
+          speak("Category added successfully");
+          toast.success("Category added successfully");
+          reset();
+          setPreview(null);
+        }
+      }
     } catch (error) {
+      console.log(error);
+
       setLoading(false);
-      console.error(error);
       toast.error(error.response.data.message);
       speak(error.response.data.message);
     } finally {
       setLoading(false);
     }
   };
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (err) => reject(err);
+    });
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const base64 = await convertToBase64(file);
+      setValue("categoryImage", base64, { shouldValidate: true });
+      setPreview(base64);
+    }
+  };
+  const fetchCategoryById = async (editId) => {
+    try {
+      const result = await CategoryService.getCategoryById(editId);
+      if (result.data.success) {
+        console.log(result);
+        const data = result.data.category;
+        setValue("categoryName", data.categoryName);
+        setValue("categoryImage", data.categoryImage);
+        setPreview(data.categoryImage);
+      }
+    } catch (error) {
+      console.error("Error fetching Category by ID:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (editId) {
+      fetchCategoryById(editId);
+    }
+  }, [editId]);
 
   return (
     <AdminLayout>
@@ -88,26 +122,6 @@ const AddCategory = () => {
                 <hr className="w-100" />
               </div>
 
-              {/* Select Brand */}
-              <div className="mb-3">
-                <label className="form-label fw-medium">Select Brand</label>
-                <select
-                  disabled={loading}
-                  className={`form-select ${errors.brand ? "is-invalid" : ""}`}
-                  {...register("brand", { required: "Brand is required" })}
-                >
-                  <option value="">Select Brand</option>
-                  {brands.map((brand) => (
-                    <option key={brand._id} value={brand._id}>
-                      {brand.brandName}
-                    </option>
-                  ))}
-                </select>
-                {errors.brand && (
-                  <div className="invalid-feedback">{errors.brand.message}</div>
-                )}
-              </div>
-
               {/* Category Name */}
               <div className="mb-3">
                 <label htmlFor="categoryName" className="form-label fw-medium">
@@ -115,22 +129,80 @@ const AddCategory = () => {
                 </label>
                 <input
                   disabled={loading}
+                  maxLength={50}
                   type="text"
-                  {...register("category", {
+                  {...register("categoryName", {
                     required: "Category Name is required",
+                    minLength: {
+                      value: 2,
+                      message: "Category Name must be at least 3 characters",
+                    },
+                    maxLength: {
+                      value: 50,
+                      message: "Category Name must be at most 50 characters",
+                    },
                   })}
                   className={`form-control ${
-                    errors.category ? "is-invalid" : ""
+                    errors.categoryName ? "is-invalid" : ""
                   }`}
                   placeholder="e.g. Smartphones, Laptops"
                   id="categoryName"
                 />
-                {errors.category && (
+                {errors.categoryName && (
                   <div className="invalid-feedback">
-                    {errors.category.message}
+                    {errors.categoryName.message}
                   </div>
                 )}
               </div>
+
+              {/* categoryImage  Input */}
+              <div className="mb-3">
+                <label className="form-label">Category Image</label>
+                <input
+                  type="file"
+                  ref={fileRef}
+                  className={`form-control ${
+                    errors.categoryImage ? "is-invalid" : ""
+                  }`}
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+                {errors.categoryImage && (
+                  <div className="invalid-feedback">Image is required</div>
+                )}
+                <input
+                  type="hidden"
+                  {...register("categoryImage", { required: true })}
+                />
+              </div>
+
+              {/* Preview */}
+              {preview && (
+                <div className="preview-wrapper d-flex align-items-center gap-3 mb-3">
+                  <div className="preview-image">
+                    <img
+                      src={preview}
+                      alt="Category preview"
+                      className="img-fluid rounded"
+                    />
+                  </div>
+
+                  <div className="preview-actions">
+                    <button
+                      type="button"
+                      className="btn btn-link text-danger p-0 d-flex align-items-center gap-2"
+                      onClick={() => {
+                        setValue("categoryImage", "");
+                        setPreview(null);
+                        if (fileRef.current) fileRef.current.value = "";
+                      }}
+                    >
+                      <i className="bi bi-x-circle"></i>
+                      <span className="fw-semibold">Remove</span>
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Helpful note before button */}
               <div className="alert alert-info small py-2 mb-3">
@@ -151,7 +223,7 @@ const AddCategory = () => {
                     aria-hidden="true"
                   ></span>
                 ) : (
-                  "Add Category"
+                  `${editId ? "Update" : "Add"} Category`
                 )}
               </button>
 

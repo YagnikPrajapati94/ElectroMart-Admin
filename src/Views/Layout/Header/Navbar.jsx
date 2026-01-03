@@ -13,16 +13,10 @@ const Navbar = () => {
 
   const shortcutItems = [
     {
-      href: "/admin/brands",
+      href: "/admin/brands/manage",
       title: "Brands",
       icon: "bi bi-tags-fill",
       subTitle: "Manage brands",
-    },
-    {
-      href: "/admin/products/manage",
-      title: "Products",
-      icon: "bi bi-box-seam",
-      subTitle: "Manage products",
     },
     {
       href: "/admin/categories/manage",
@@ -31,22 +25,16 @@ const Navbar = () => {
       subTitle: "Manage categories",
     },
     {
-      href: "/admin/orders",
-      title: "Orders",
-      icon: "bi bi-bag-check-fill",
-      subTitle: "Manage orders",
+      href: "/admin/subcategories/manage",
+      title: "Subcategories",
+      icon: "bi bi-diagram-3-fill",
+      subTitle: "Manage subcategories",
     },
     {
-      href: "/admin/users",
+      href: "/admin/users/manage",
       title: "Users",
       icon: "bi bi-people-fill",
       subTitle: "Manage users",
-    },
-    {
-      href: "/admin/reviews",
-      title: "Reviews",
-      icon: "bi bi-star-fill",
-      subTitle: "Manage reviews",
     },
   ];
 

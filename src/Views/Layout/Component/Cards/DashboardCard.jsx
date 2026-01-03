@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 const DashboardCard = ({ title, count, icon, path, bg }) => {
   return (
     <>
-      <div className=" col-xxl-3 col-md-6 mb-lg-0 mb-3">
+      <div className=" col-xxl-3 col-md-6 mb-4">
         <div className="card h-100  hover-shadow border-0 shadow-sm bg-light ">
           <div className="card-body d-flex align-items-center">
             <div
-              className={`card-icon rounded-2 ${bg} fs-3 text-light border me-3`}
+              className={`card-icon rounded-2 ${bg} fs-3 text-light border-0 me-3`}
             >
               <i className={icon}></i>
             </div>

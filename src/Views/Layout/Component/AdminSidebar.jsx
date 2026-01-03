@@ -23,21 +23,29 @@ const AdminSidebar = () => {
     },
     {
       label: "Categories",
-      icon: "bi-tags-fill",
+      icon: "bi-folder-fill",
       children: [
         { label: "Add Category", path: "/admin/categories/addCategory" },
-        { label: "Add Subcategory", path: "/admin/categories/addSubCategory" },
-        { label: "Add Attribute", path: "/admin/categories/addAttribute" },
-        { label: "Manage Attributes", path: "/admin/categories/Attributes" },
+        { label: "Manage Category", path: "/admin/categories/manage" },
+      ],
+    },
+    {
+      label: "Subcategories",
+      icon: "bi-diagram-3-fill",
+      children: [
         {
-          label: "Manage Categories & Subcategories",
-          path: "/admin/categories/manage",
+          label: "Add Subcategory",
+          path: "/admin/subcategories/addSubCategory",
+        },
+        {
+          label: "Manage Subcategory",
+          path: "/admin/subcategories/manage",
         },
       ],
     },
     {
       label: "Brands",
-      icon: "bi-tags-fill",
+      icon: "bi-award-fill",
       children: [
         { label: "Add Brand", path: "/admin/brands/add" },
         { label: "Manage Brands", path: "/admin/brands/manage" },
@@ -55,7 +63,7 @@ const AdminSidebar = () => {
     {
       label: "Users",
       icon: "bi-people-fill",
-      path: "/admin/users",
+      path: "/admin/users/manage",
     },
     {
       label: "Reviews",
@@ -115,11 +123,11 @@ const AdminSidebar = () => {
       <div className="offcanvas-body   px-0     sidebar-scroll ">
         <ul className="list-unstyled   gap-3 navbar-nav">
           {menuItems.map((item, index) => (
-            <li key={index} className="sidebar-menu-item">
+            <li key={index} className="sidebar-menu-item px-3">
               {item.children ? (
                 <>
                   <a
-                    className={`d-flex px-4 child-color box-hover  justify-content-between align-items-center text-decoration-none px-2 py-1 ${
+                    className={`d-flex   box-hover  justify-content-between align-items-center text-decoration-none  px-3 py-2 ${
                       item.children.some((child) => isActive(child.path))
                         ? "active  "
                         : "non-active"
@@ -154,7 +162,7 @@ const AdminSidebar = () => {
                     />
                   </a>
                   <ul
-                    className={`collapse SubtitleText   collapse-list ps-5 ${
+                    className={`collapse SubtitleText    collapse-list ${
                       item.children.some((child) => isActive(child.path))
                         ? "show"
                         : ""
@@ -162,10 +170,15 @@ const AdminSidebar = () => {
                     id={`submenu${index}`}
                   >
                     {item.children.map((sub, subIndex) => (
-                      <li key={subIndex}>
+                      <li
+                        key={subIndex}
+                        className={`pt-3 ${
+                          isActive(sub.path) ? "child-active" : ""
+                        }`}
+                      >
                         <Link
                           to={sub.path}
-                          className={`text-decoration-none small   d-block py-2 px-2 rounded ${
+                          className={`text-decoration-none small box-hover-child     d-block  px-2 rounded ${
                             isActive(sub.path) ? "child-active" : "SubtitleText"
                           }`}
                         >
@@ -178,7 +191,7 @@ const AdminSidebar = () => {
               ) : (
                 <Link
                   to={item.path}
-                  className={`d-flex    px-4 align-items-center px-2 py-1 text-decoration-none rounded ${
+                  className={`d-flex box-hover   align-items-center px-3 py-2 text-decoration-none  ${
                     isActive(item.path) ? "active " : "non-active"
                   }`}
                 >

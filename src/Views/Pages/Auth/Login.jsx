@@ -37,8 +37,8 @@ export default function Login() {
         setIsAuthenticated(true);
         speak("Login successful");
         toast.success("Login successful");
-        navigate("/admin/dashboard");
         getMe();
+        navigate("/admin/dashboard");
       }
     } catch (error) {
       speak(error.response.data.message);

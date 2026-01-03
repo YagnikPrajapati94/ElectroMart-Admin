@@ -16,11 +16,14 @@ import Brand from "./Views/Pages/brands/Brand.jsx";
 import "react-loading-skeleton/dist/skeleton.css";
 import Unauthorized from "./Views/Pages/Unauthorized.jsx";
 import AddCategory from "./Views/Pages/categories/AddCategory.jsx";
-import AddSubCategory from "./Views/Pages/categories/AddSubCategory.jsx";
 import ManageCatSub from "./Views/Pages/categories/ManageCatSub.jsx";
 import AddAttribute from "./Views/Pages/categories/AddAttribute.jsx";
 import PublicRoute from "./Views/PublicRoute.jsx";
 import AddBrand from "./Views/Pages/brands/AddBrand.jsx";
+import ManageCategory from "./Views/Pages/categories/ManageCategory.jsx";
+import AddSubCategory from "./Views/Pages/subcategories/AddSubCategory.jsx";
+import ManageSubCategory from "./Views/Pages/subcategories/ManageSubCategory.jsx";
+import ManageUser from "./Views/Pages/User/ManageUser.jsx";
 
 function App() {
   useEffect(() => {
@@ -106,7 +109,7 @@ function App() {
           />
 
           {/* categories routes */}
-          {/* <Route
+          <Route
             path="/admin/categories/addCategory"
             element={
               <PrivateRoute>
@@ -115,10 +118,53 @@ function App() {
             }
           />
           <Route
-            path="/admin/categories/addSubCategory"
+            path="/admin/categories/addCategory/:editId"
+            element={
+              <PrivateRoute>
+                <AddCategory />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/categories/manage"
+            element={
+              <PrivateRoute>
+                <ManageCategory />
+              </PrivateRoute>
+            }
+          />
+
+          {/* subcategories routes */}
+          <Route
+            path="/admin/subcategories/addSubCategory"
             element={
               <PrivateRoute>
                 <AddSubCategory />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/subcategories/addSubCategory/:editId"
+            element={
+              <PrivateRoute>
+                <AddSubCategory />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/subcategories/manage"
+            element={
+              <PrivateRoute>
+                <ManageSubCategory />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/users/manage"
+            element={
+              <PrivateRoute>
+                <ManageUser />
               </PrivateRoute>
             }
           />
@@ -139,7 +185,7 @@ function App() {
                 <ManageCatSub />
               </PrivateRoute>
             }
-          /> */}
+          />
 
           <Route
             path="*"
