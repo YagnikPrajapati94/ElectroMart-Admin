@@ -9,7 +9,7 @@ const AuthSerivce = {
         return response;
     },
     getMe: async () => {
-        const response = await axiosInstance.get(`${API}/api/getMe`);
+        const response = await axiosInstance.get(`${API}/api/getAdmin`);
         return response;
     },
     logout: async () => {

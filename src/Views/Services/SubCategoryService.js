@@ -22,6 +22,10 @@ const SubCategoryService = {
         const response = await axiosInstance.get(`${API}/api/getSubCategories`);
         return response;
     },
+    getSubCategoryByCategoryId: async (id) => {
+        const response = await axiosInstance.get(`${API}/api/getSubCategoryByCategoryId/${id}`);
+        return response;
+    },
 }
 
 export default SubCategoryService

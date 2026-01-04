@@ -206,6 +206,17 @@ form {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
+.upload-box {
+  border: 2px dashed var(--border);
+  color: var(--secondaryText) !important;
+  background: var(--background) !important;
+}
+
+.upload-box:hover {
+  background: var(--navBackground) !important;
+}
+
+
 .icon-box {
   width: 52px;
   height: 52px;

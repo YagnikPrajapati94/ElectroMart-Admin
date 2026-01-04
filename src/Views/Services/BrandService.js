@@ -18,6 +18,10 @@ const BrandService = {
         const response = await axiosInstance.put(`${API}/api/updateBrand/${id}`, data);
         return response;
     },
+    getBrandsDropdown: async () => {
+        const response = await axiosInstance.get(`${API}/api/getBrandsDropdown`);
+        return response;
+    },
 }
 
 export default BrandService

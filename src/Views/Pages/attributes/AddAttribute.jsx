@@ -5,23 +5,25 @@ import { useFieldArray, useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { speak } from "../../Layout/utils/speak";
+import CategoryService from "../../Services/CategoryService";
+import AttributeService from "../../Services/AttributeService";
 
 const AddAttribute = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const baseURL = import.meta.env.VITE_API_URL;
-  const token = sessionStorage.getItem("adminToken");
+  const [editMode, setEditMode] = useState(false);
 
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
     control,
   } = useForm({
     mode: "onChange", // ✅ Real-time validation
     defaultValues: {
-      category: "",
+      categoryId: "",
       attributes: [
         {
           label: "",
@@ -32,34 +34,48 @@ const AddAttribute = () => {
       ],
     },
   });
-
   const handleAttributeSubmit = async (data) => {
     setLoading(true);
+
     try {
       const formattedAttributes = data.attributes.map((attr) => ({
         ...attr,
-        options: attr.options
-          ? attr.options.split(",").map((opt) => opt.trim())
-          : [],
+        options: Array.isArray(attr.options)
+          ? attr.options
+          : attr.options
+              ?.split(",")
+              .map((opt) => opt.trim())
+              .filter(Boolean),
       }));
 
       const finalData = {
-        category: data.category,
+        categoryId: data.categoryId,
         attributes: formattedAttributes,
       };
-      const res = await axios.post(`${baseURL}/api/addAttribute`, finalData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("Form submitted:", finalData);
-      toast.success(res.data.message);
-      speak(res.data.message);
-      setLoading(false);
+
+      const res = await AttributeService.addAttribute(finalData);
+
+      if (res.data.success) {
+        toast.success("Attributes saved successfully");
+        speak("Attributes saved successfully");
+
+        setEditMode(false);
+
+        reset({
+          categoryId: "",
+          attributes: [
+            {
+              label: "",
+              name: "",
+              type: "",
+              options: "",
+            },
+          ],
+        });
+      }
     } catch (error) {
-      console.log(error);
-      toast.error(error.response?.data?.message || "Failed to add attributes");
-      speak(error.response?.data?.message || "Failed to add attributes");
+      toast.error(error.response?.data?.message || "Failed to save attributes");
+    } finally {
       setLoading(false);
     }
   };
@@ -78,23 +94,52 @@ const AddAttribute = () => {
       options: "",
     });
   };
-
-  const fetchCategory = async () => {
+  const fetchCategories = async () => {
     try {
-      const res = await axios.get(`${baseURL}/api/getOnlyCategory`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setCategories(res.data.categories);
+      const result = await CategoryService.getCategoriesDropdown();
+      console.log(result);
+
+      setCategories(result.data.categories);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch categories:", error);
     }
   };
-
   useEffect(() => {
-    fetchCategory();
+    fetchCategories();
   }, []);
+
+  const handleGetAttributeByCategory = async (categoryId) => {
+    try {
+      const result = await AttributeService.getAttributeByCategory(categoryId);
+      const formattedAttributes = result.data.attributes.attributes.map(
+        (attr) => ({
+          ...attr,
+          options: Array.isArray(attr.options) ? attr.options.join(", ") : "",
+        })
+      );
+      reset({
+        categoryId,
+        attributes: formattedAttributes,
+      });
+      setEditMode(true);
+    } catch (error) {
+      if (error.response?.status === 404) {
+        reset({
+          categoryId,
+          attributes: [
+            {
+              label: "",
+              name: "",
+              type: "",
+              options: "",
+            },
+          ],
+        });
+      } else {
+        console.error("Failed to fetch attributes");
+      }
+    }
+  };
 
   return (
     <AdminLayout>
@@ -126,18 +171,19 @@ const AddAttribute = () => {
                 <div className="col-12 mb-3">
                   <label className="form-label">Select Category</label>
                   <select
-                    disabled={categories.length === 0}
-                    className={`form-select ${
-                      errors.category ? "is-invalid" : ""
-                    }`}
-                    {...register("category", {
-                      required: "Category is required",
-                    })}
+                    className="form-select TitleText"
+                    {...register("categoryId", { required: true })}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (!value) return;
+
+                      handleGetAttributeByCategory(value);
+                    }}
                   >
                     <option value="">Select Category</option>
-                    {categories.map((item, index) => (
-                      <option key={index} value={item}>
-                        {item}
+                    {categories.map((cat) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.categoryName}
                       </option>
                     ))}
                   </select>
@@ -306,7 +352,7 @@ const AddAttribute = () => {
                         aria-hidden="true"
                       ></span>
                     ) : (
-                      "Add Attributes"
+                      `${editMode ? "Update" : "Add"} Attribute`
                     )}
                   </button>
                   {/* help guide  */}

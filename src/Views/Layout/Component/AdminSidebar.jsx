@@ -17,8 +17,6 @@ const AdminSidebar = () => {
       children: [
         { label: "Add Product", path: "/admin/products/add" },
         { label: "Manage Products", path: "/admin/products/manage" },
-        { label: "Product Variants", path: "/admin/products/variants" },
-        { label: "Product Attributes", path: "/admin/products/attributes" },
       ],
     },
     {
@@ -50,6 +48,15 @@ const AdminSidebar = () => {
         { label: "Add Brand", path: "/admin/brands/add" },
         { label: "Manage Brands", path: "/admin/brands/manage" },
       ],
+    },
+    {
+      label: "Attributes",
+      icon: "bi-tags-fill",
+      path: "/admin/attributes/add",
+      // children: [
+      //   { label: "Add Attribute", path: "/admin/attributes/add" },
+      //   { label: "Manage Attributes", path: "/admin/attributes/manage" },
+      // ],
     },
     {
       label: "Orders",

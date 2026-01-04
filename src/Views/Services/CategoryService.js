@@ -26,6 +26,7 @@ const CategoryService = {
         const response = await axiosInstance.get(`${API}/api/getCategoriesDropdown`);
         return response;
     },
+
 }
 
 export default CategoryService

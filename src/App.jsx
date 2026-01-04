@@ -17,13 +17,14 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Unauthorized from "./Views/Pages/Unauthorized.jsx";
 import AddCategory from "./Views/Pages/categories/AddCategory.jsx";
 import ManageCatSub from "./Views/Pages/categories/ManageCatSub.jsx";
-import AddAttribute from "./Views/Pages/categories/AddAttribute.jsx";
 import PublicRoute from "./Views/PublicRoute.jsx";
 import AddBrand from "./Views/Pages/brands/AddBrand.jsx";
 import ManageCategory from "./Views/Pages/categories/ManageCategory.jsx";
 import AddSubCategory from "./Views/Pages/subcategories/AddSubCategory.jsx";
 import ManageSubCategory from "./Views/Pages/subcategories/ManageSubCategory.jsx";
 import ManageUser from "./Views/Pages/User/ManageUser.jsx";
+import AddAttribute from "./Views/Pages/attributes/AddAttribute.jsx";
+import ManageProduct from "./Views/Pages/products/ManageProduct.jsx";
 
 function App() {
   useEffect(() => {
@@ -73,14 +74,30 @@ function App() {
           />
 
           {/* Products routes  */}
-          {/* <Route
+          <Route
             path="/admin/products/add"
             element={
               <PrivateRoute>
                 <AddProduct />
               </PrivateRoute>
             }
-          /> */}
+          />
+          <Route
+            path="/admin/products/add/:editId"
+            element={
+              <PrivateRoute>
+                <AddProduct />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/products/Manage"
+            element={
+              <PrivateRoute>
+                <ManageProduct />
+              </PrivateRoute>
+            }
+          />
 
           {/* brands routes  */}
           <Route
@@ -170,7 +187,7 @@ function App() {
           />
 
           <Route
-            path="/admin/categories/addAttribute"
+            path="/admin/attributes/add"
             element={
               <PrivateRoute>
                 <AddAttribute />
@@ -178,14 +195,14 @@ function App() {
             }
           />
 
-          <Route
+          {/* <Route
             path="/admin/categories/manage"
             element={
               <PrivateRoute>
                 <ManageCatSub />
               </PrivateRoute>
             }
-          />
+          /> */}
 
           <Route
             path="*"
