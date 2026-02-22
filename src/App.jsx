@@ -25,6 +25,10 @@ import ManageSubCategory from "./Views/Pages/subcategories/ManageSubCategory.jsx
 import ManageUser from "./Views/Pages/User/ManageUser.jsx";
 import AddAttribute from "./Views/Pages/attributes/AddAttribute.jsx";
 import ManageProduct from "./Views/Pages/products/ManageProduct.jsx";
+import AddDeal from "./Views/Pages/dealBanner/AddDeal.jsx";
+import ManageDeal from "./Views/Pages/dealBanner/ManageDeal.jsx";
+import AddLaunch from "./Views/Pages/launchBanner/AddLaunch.jsx";
+import ManageLaunch from "./Views/Pages/launchBanner/ManageLaunch.jsx";
 
 function App() {
   useEffect(() => {
@@ -191,6 +195,58 @@ function App() {
             element={
               <PrivateRoute>
                 <AddAttribute />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Promotions Section-------------------------------------------- */}
+          <Route
+            path="/admin/deal/add"
+            element={
+              <PrivateRoute>
+                <AddDeal />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/deal/add/:editId"
+            element={
+              <PrivateRoute>
+                <AddDeal />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/deal/manage"
+            element={
+              <PrivateRoute>
+                <ManageDeal />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/launch/add"
+            element={
+              <PrivateRoute>
+                <AddLaunch />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/launch/add/:editId"
+            element={
+              <PrivateRoute>
+                <AddLaunch />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/launch/manage"
+            element={
+              <PrivateRoute>
+                <ManageLaunch />
               </PrivateRoute>
             }
           />

@@ -196,6 +196,41 @@ form {
   /* border: 1px solid var(--border) !important; */
 }
 
+.custom-switch {
+  width: 40px;
+  height: 17px;
+  cursor: pointer !important;
+}
+
+/* ON state */
+.custom-switch:checked {
+  background-color: #198754 !important;
+  /* success green */
+  border-color: #198754 !important;
+}
+
+/* OFF state */
+.custom-switch:not(:checked) {
+  background-color: #e9ecef !important;
+  /* light grey */
+  border-color: #adb5bd !important;
+  /* medium grey */
+}
+
+
+.sidebar-scroll {
+  max-height: calc(100vh - 80px) !important;
+  /* header height adjust */
+  overflow-y: auto !important;
+}
+
+.custom-switch:focus,
+.custom-switch:active {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+
 .dashboard-card {
   border-radius: 14px;
   transition: all 0.25s ease;

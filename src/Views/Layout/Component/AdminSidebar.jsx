@@ -1,10 +1,10 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { RxCaretDown } from "react-icons/rx";
+import { useEffect } from "react";
 
 const AdminSidebar = () => {
   const location = useLocation();
-
   const menuItems = [
     {
       label: "Dashboard",
@@ -71,6 +71,24 @@ const AdminSidebar = () => {
       label: "Users",
       icon: "bi-people-fill",
       path: "/admin/users/manage",
+    },
+    {
+      label: "Add Promotions",
+      icon: "bi-plus-circle-fill",
+      children: [
+        { label: "Add Hero Banner", path: "/admin/hero/add" },
+        { label: "Add Launch Banner", path: "/admin/launch/add" },
+        { label: "Add Deal", path: "/admin/deal/add" },
+      ],
+    },
+    {
+      label: "Manage Promotions",
+      icon: "bi-list-check",
+      children: [
+        { label: "Hero Banners", path: "/admin/hero/manage" },
+        { label: "Latest Launches", path: "/admin/launch/manage" },
+        { label: "Deals of the Day", path: "/admin/deal/manage" },
+      ],
     },
     {
       label: "Reviews",

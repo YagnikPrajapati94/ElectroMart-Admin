@@ -22,6 +22,10 @@ const ProductService = {
         const response = await axiosInstance.get(`${API}/api/getAllProductsTableData`);
         return response;
     },
+    getProductsDropdown: async () => {
+        const response = await axiosInstance.get(`${API}/api/getProductsDropdown`);
+        return response;
+    },
 }
 
 export default ProductService
