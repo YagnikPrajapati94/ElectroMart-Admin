@@ -15,7 +15,7 @@ ChartJS.register(
   BarElement,
   ArcElement,
   Tooltip,
-  Legend
+  Legend,
 );
 
 import AdminLayout from "./AdminLayout";

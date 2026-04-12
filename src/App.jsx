@@ -29,6 +29,8 @@ import AddDeal from "./Views/Pages/dealBanner/AddDeal.jsx";
 import ManageDeal from "./Views/Pages/dealBanner/ManageDeal.jsx";
 import AddLaunch from "./Views/Pages/launchBanner/AddLaunch.jsx";
 import ManageLaunch from "./Views/Pages/launchBanner/ManageLaunch.jsx";
+import ManageOrders from "./Views/Pages/Orders/Manageorders.jsx";
+import ManagePayments from "./Views/Pages/Payments/Managepayments.jsx";
 
 function App() {
   useEffect(() => {
@@ -247,6 +249,22 @@ function App() {
             element={
               <PrivateRoute>
                 <ManageLaunch />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/orders/manage"
+            element={
+              <PrivateRoute>
+                <ManageOrders />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/payments/manage"
+            element={
+              <PrivateRoute>
+                <ManagePayments />
               </PrivateRoute>
             }
           />

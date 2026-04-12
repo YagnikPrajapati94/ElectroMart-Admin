@@ -61,11 +61,7 @@ const AdminSidebar = () => {
     {
       label: "Orders",
       icon: "bi-cart-check-fill",
-      children: [
-        { label: "All Orders", path: "/admin/orders" },
-        { label: "Pending Orders", path: "/admin/orders/pending" },
-        { label: "Completed Orders", path: "/admin/orders/completed" },
-      ],
+      path: "/admin/orders/manage",
     },
     {
       label: "Users",
@@ -76,7 +72,7 @@ const AdminSidebar = () => {
       label: "Add Promotions",
       icon: "bi-plus-circle-fill",
       children: [
-        { label: "Add Hero Banner", path: "/admin/hero/add" },
+        // { label: "Add Hero Banner", path: "/admin/hero/add" },
         { label: "Add Launch Banner", path: "/admin/launch/add" },
         { label: "Add Deal", path: "/admin/deal/add" },
       ],
@@ -85,42 +81,15 @@ const AdminSidebar = () => {
       label: "Manage Promotions",
       icon: "bi-list-check",
       children: [
-        { label: "Hero Banners", path: "/admin/hero/manage" },
+        // { label: "Hero Banners", path: "/admin/hero/manage" },
         { label: "Latest Launches", path: "/admin/launch/manage" },
         { label: "Deals of the Day", path: "/admin/deal/manage" },
       ],
     },
     {
-      label: "Reviews",
-      icon: "bi-chat-left-dots-fill",
-      path: "/admin/reviews",
-    },
-    {
       label: "Payments",
       icon: "bi-credit-card-fill",
-      path: "/admin/payments",
-    },
-    {
-      label: "Stock/Inventory",
-      icon: "bi-boxes",
-      path: "/admin/inventory",
-    },
-    {
-      label: "Shipping/Delivery",
-      icon: "bi-truck",
-      children: [
-        { label: "Shipping Methods", path: "/admin/shipping/methods" },
-        { label: "Track Deliveries", path: "/admin/shipping/tracking" },
-      ],
-    },
-    {
-      label: "Admin Settings",
-      icon: "bi-gear-fill",
-      children: [
-        { label: "Add Admin", path: "/admin/settings/add-admin" },
-        { label: "Change Password", path: "/admin/settings/change-password" },
-        { label: "Activity Logs", path: "/admin/settings/logs" },
-      ],
+      path: "/admin/payments/manage",
     },
   ];
 
